@@ -1,0 +1,40 @@
+﻿@model IEnumerable<AP.Models.Product>
+
+@{
+    ViewBag.Title = "Product";
+}
+
+<h2>Products</h2>
+
+<!-- FOREACH + SWITCH -->
+@foreach (var item in Model)
+{
+    <ul>
+        @switch (item.Price)
+        {
+            case 20:
+                <li class=" link-primary">
+                    Price: @item.Price | Name: @item.Name | Category: @item.Id
+                </li>
+                break;
+
+            case 10:
+                <li class=" link-secondary">
+                    Price: @item.Price | Name: @item.Name | Category: @item.Id
+                </li>
+                break;
+
+            case 30:
+                <li class=" link-danger">
+                    Price: @item.Price | Name: @item.Name | Category: @item.Id
+                </li>
+                break;
+
+            default:
+                <li>
+                    Price: @item.Price | Name: @item.Name | Category: @item.Id
+                </li>
+                break;
+        }
+    </ul>
+}
