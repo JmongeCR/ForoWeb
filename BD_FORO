@@ -1,0 +1,57 @@
+/* =========================
+   TABLA: Usuario
+   ========================= */
+CREATE TABLE Usuario (
+    UsuarioId      INT IDENTITY(1,1) PRIMARY KEY,
+    NombreUsuario  NVARCHAR(50)  NOT NULL UNIQUE,
+    Email          NVARCHAR(120) NOT NULL UNIQUE,
+    Rol            NVARCHAR(30)  NOT NULL DEFAULT 'Usuario',
+    Activo         BIT           NOT NULL DEFAULT 1,
+    FechaRegistro  DATETIME2     NOT NULL DEFAULT SYSDATETIME()
+);
+
+/* =========================
+   TABLA: Categoria (temas del foro)
+   ========================= */
+CREATE TABLE Categoria (
+    CategoriaId    INT IDENTITY(1,1) PRIMARY KEY,
+    Nombre         NVARCHAR(80)  NOT NULL UNIQUE,
+    Descripcion    NVARCHAR(200),
+    Activa         BIT           NOT NULL DEFAULT 1
+);
+
+/* =========================
+   TABLA: Asignacion (Hilo / Tema)
+   ========================= */
+CREATE TABLE Asignacion (
+    AsignacionId   INT IDENTITY(1,1) PRIMARY KEY,
+    CategoriaId    INT NOT NULL,
+    UsuarioId      INT NOT NULL,
+    Titulo         NVARCHAR(150) NOT NULL,
+    Contenido      NVARCHAR(MAX) NOT NULL,
+    Estado         NVARCHAR(20)  NOT NULL DEFAULT 'Abierto',
+    FechaCreacion  DATETIME2     NOT NULL DEFAULT SYSDATETIME(),
+
+    CONSTRAINT FK_Asignacion_Categoria
+        FOREIGN KEY (CategoriaId) REFERENCES Categoria(CategoriaId),
+
+    CONSTRAINT FK_Asignacion_Usuario
+        FOREIGN KEY (UsuarioId) REFERENCES Usuario(UsuarioId)
+);
+
+/* =========================
+   TABLA: Consulta (Respuestas al hilo)
+   ========================= */
+CREATE TABLE Consulta (
+    ConsultaId     INT IDENTITY(1,1) PRIMARY KEY,
+    AsignacionId   INT NOT NULL,
+    UsuarioId      INT NOT NULL,
+    Mensaje        NVARCHAR(MAX) NOT NULL,
+    FechaCreacion  DATETIME2     NOT NULL DEFAULT SYSDATETIME(),
+
+    CONSTRAINT FK_Consulta_Asignacion
+        FOREIGN KEY (AsignacionId) REFERENCES Asignacion(AsignacionId),
+
+    CONSTRAINT FK_Consulta_Usuario
+        FOREIGN KEY (UsuarioId) REFERENCES Usuario(UsuarioId)
+);
