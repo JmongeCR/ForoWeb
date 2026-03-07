@@ -1,0 +1,92 @@
+﻿@model AP.MVC.Models.ProfileVM
+
+@{
+    ViewBag.Title = "Mi perfil";
+}
+
+<style>
+    .forou-profile-wrap {
+        max-width: 980px;
+        margin: 0 auto;
+    }
+
+    .forou-profile-card {
+        background: #111328;
+        border: 1px solid rgba(123, 137, 255, 0.14);
+        border-radius: 20px;
+        padding: 28px;
+        box-shadow: 0 18px 40px rgba(0,0,0,0.18);
+        display: flex;
+        gap: 28px;
+        align-items: flex-start;
+    }
+
+    .forou-profile-avatar {
+        width: 130px;
+        height: 130px;
+        border-radius: 20px;
+        object-fit: cover;
+        border: 2px solid rgba(123, 137, 255, 0.30);
+        box-shadow: 0 0 20px rgba(91, 105, 255, 0.18);
+    }
+
+    .forou-profile-title {
+        font-size: 34px;
+        font-weight: 800;
+        color: #fff;
+        margin-bottom: 8px;
+    }
+
+    .forou-profile-sub {
+        color: #c7d0f1;
+        margin-bottom: 22px;
+        font-size: 16px;
+    }
+
+    .forou-profile-grid {
+        display: grid;
+        grid-template-columns: 180px 1fr;
+        gap: 12px 18px;
+    }
+
+    .forou-profile-label {
+        color: #9eabd6;
+        font-weight: 700;
+    }
+
+    .forou-profile-value {
+        color: #eef1ff;
+    }
+
+    @@media (max-width: 768px) {
+        .forou-profile-card {
+            flex-direction: column;
+        }
+
+        .forou-profile-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="forou-profile-wrap">
+    <div class="forou-profile-card">
+        <img class="forou-profile-avatar" src="@Url.Content(Model.PhotoUrl)" alt="Foto de perfil" />
+
+        <div>
+            <div class="forou-profile-title">@Model.FullName</div>
+            <div class="forou-profile-sub">Información de tu cuenta en ForoU</div>
+
+            <div class="forou-profile-grid">
+                <div class="forou-profile-label">Correo</div>
+                <div class="forou-profile-value">@Model.Email</div>
+
+                <div class="forou-profile-label">Rol</div>
+                <div class="forou-profile-value">@Model.Role</div>
+
+                <div class="forou-profile-label">ID usuario</div>
+                <div class="forou-profile-value">@Model.UserId</div>
+            </div>
+        </div>
+    </div>
+</div>

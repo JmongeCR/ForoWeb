@@ -1,13 +1,29 @@
 ﻿@{
-    ViewBag.Title = "Login";
+    Layout = "~/Views/Shared/_LayoutLogin.cshtml";
+    ViewBag.Title = "Iniciar sesión";
 }
 
-<h2>Login</h2>
+<div class="forou-form-title">Iniciar sesión</div>
+<div class="forou-form-subtitle">
+    Iniciá sesión con tu cuenta de la U para continuar
+</div>
 
-<form method="post">
-    <label>Name</label><br />
+@if (ViewBag.Error != null)
+{
+    <div class="forou-alert">
+        @ViewBag.Error
+    </div>
+}
 
-    <input type="text" name="Name" /><br /><br />
+@using (Html.BeginForm("Login", "Access", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
 
-    <input type="submit" value="Login" />
-</form>
+    <label class="forou-form-label">Correo o usuario</label>
+    <input type="text" name="email" class="forou-input" />
+
+    <label class="forou-form-label">Contraseña</label>
+    <input type="password" name="password" class="forou-input" />
+
+    <button type="submit" class="forou-btn-primary">Entrar</button>
+}
