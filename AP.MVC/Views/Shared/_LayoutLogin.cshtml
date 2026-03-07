@@ -1,0 +1,142 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewBag.Title</title>
+    @Scripts.Render("~/bundles/modernizr")
+
+    <style>
+        html, body {
+            height: 100%;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            min-height: 100vh;
+            position: relative;
+            overflow: hidden;
+            background: radial-gradient(circle at bottom left, rgba(110, 44, 255, 0.18), transparent 25%), #091022;
+            color: #1f2a44;
+        }
+
+        .forou-login-bg {
+            position: fixed;
+            inset: 0;
+            background-image: radial-gradient(rgba(255,255,255,0.15) 1px, transparent 1px);
+            background-size: 48px 48px;
+            opacity: 0.35;
+            pointer-events: none;
+        }
+
+        .forou-login-wrap {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            z-index: 1;
+            padding: 24px;
+            box-sizing: border-box;
+        }
+
+        .forou-login-card {
+            width: 100%;
+            max-width: 470px;
+            background: rgba(229, 233, 244, 0.92);
+            border-radius: 24px;
+            padding: 34px;
+            box-sizing: border-box;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.28);
+            border: 1px solid rgba(255,255,255,0.4);
+        }
+
+        .forou-login-footer {
+            margin-top: 16px;
+            color: #ffffff;
+            font-size: 14px;
+        }
+
+        .forou-form-title {
+            font-size: 24px;
+            font-weight: 800;
+            color: #1f2a44;
+            text-align: center;
+            margin-bottom: 8px;
+        }
+
+        .forou-form-subtitle {
+            color: #55607a;
+            text-align: center;
+            margin-bottom: 26px;
+            font-size: 15px;
+        }
+
+        .forou-form-label {
+            display: block;
+            color: #2f3a55;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .forou-input {
+            width: 100%;
+            height: 48px;
+            border-radius: 10px;
+            border: 1px solid #cfd6eb;
+            background: #fff;
+            padding: 0 14px;
+            box-sizing: border-box;
+            font-size: 15px;
+            margin-bottom: 16px;
+        }
+
+            .forou-input:focus {
+                outline: none;
+                border-color: #5c6cff;
+                box-shadow: 0 0 0 3px rgba(92,108,255,0.14);
+            }
+
+        .forou-btn-primary {
+            background: linear-gradient(90deg, #0d1734 0%, #16264f 100%);
+            color: #fff;
+            border: none;
+            height: 50px;
+            border-radius: 12px;
+            width: 100%;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 10px 24px rgba(7, 17, 42, 0.25);
+        }
+
+        .forou-alert {
+            background: #ffd9df;
+            color: #8b1730;
+            border: 1px solid #f3a8b7;
+            border-radius: 10px;
+            padding: 12px 14px;
+            margin-bottom: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div class="forou-login-bg"></div>
+
+    <main class="forou-login-wrap">
+        <div class="forou-login-card">
+            @RenderBody()
+        </div>
+
+        <div class="forou-login-footer">
+            © 2026 ForoU
+        </div>
+    </main>
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+</body>
+</html>

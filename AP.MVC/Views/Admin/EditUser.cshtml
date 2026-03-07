@@ -1,0 +1,197 @@
+﻿@model AP.Models.User
+
+@{
+    ViewBag.Title = "Editar usuario";
+}
+
+<style>
+    .forou-form-wrap {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    .forou-form-card {
+        background: #111328;
+        border: 1px solid rgba(123, 137, 255, 0.14);
+        border-radius: 20px;
+        padding: 28px;
+        box-shadow: 0 18px 40px rgba(0,0,0,0.18);
+    }
+
+    .forou-form-title {
+        font-size: 32px;
+        font-weight: 800;
+        color: #fff;
+        margin-bottom: 8px;
+    }
+
+    .forou-form-subtitle {
+        color: #c7d0f1;
+        margin-bottom: 24px;
+        font-size: 16px;
+    }
+
+    .forou-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+
+    .forou-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .forou-label {
+        color: #dbe2ff;
+        font-weight: 700;
+        margin-bottom: 8px;
+    }
+
+    .forou-input,
+    .forou-select {
+        width: 100%;
+        height: 48px;
+        border-radius: 12px;
+        border: 1px solid rgba(123, 137, 255, 0.22);
+        background: #0c1022;
+        color: #eef1ff;
+        padding: 0 14px;
+        box-sizing: border-box;
+        font-size: 15px;
+    }
+
+        .forou-input:focus,
+        .forou-select:focus {
+            outline: none;
+            border-color: #6d79ff;
+            box-shadow: 0 0 0 3px rgba(109,121,255,0.12);
+        }
+
+    .forou-check-row {
+        margin-top: 8px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #dbe2ff;
+    }
+
+    .forou-btn-row {
+        margin-top: 26px;
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .forou-btn-primary {
+        display: inline-block;
+        background: linear-gradient(90deg, #5f6fff 0%, #7e49ff 100%);
+        color: #fff;
+        text-decoration: none;
+        padding: 12px 18px;
+        border-radius: 12px;
+        font-weight: 700;
+        border: none;
+        cursor: pointer;
+    }
+
+        .forou-btn-primary:hover {
+            color: #fff;
+            text-decoration: none;
+            opacity: 0.95;
+        }
+
+    .forou-btn-secondary {
+        display: inline-block;
+        background: transparent;
+        color: #dbe2ff;
+        text-decoration: none;
+        padding: 12px 18px;
+        border-radius: 12px;
+        font-weight: 700;
+        border: 1px solid rgba(123, 137, 255, 0.24);
+    }
+
+        .forou-btn-secondary:hover {
+            color: #fff;
+            text-decoration: none;
+            background: rgba(255,255,255,0.04);
+        }
+
+    .field-validation-error,
+    .validation-summary-errors {
+        color: #ffb4c2;
+    }
+
+    @@media (max-width: 900px) {
+        .forou-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="forou-form-wrap">
+    <div class="forou-form-card">
+        <div class="forou-form-title">Editar usuario</div>
+        <div class="forou-form-subtitle">Actualizá la información del usuario</div>
+
+        @using (Html.BeginForm("EditUser", "Admin", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(m => m.UserId)
+            @Html.ValidationSummary(true, "", new { @class = "validation-summary-errors" })
+
+            <div class="forou-grid">
+                <div class="forou-group">
+                    <label class="forou-label">Nombre completo</label>
+                    @Html.TextBoxFor(m => m.FullName, new { @class = "forou-input" })
+                    @Html.ValidationMessageFor(m => m.FullName)
+                </div>
+
+                <div class="forou-group">
+                    <label class="forou-label">Correo</label>
+                    @Html.TextBoxFor(m => m.Email, new { @class = "forou-input" })
+                    @Html.ValidationMessageFor(m => m.Email)
+                </div>
+
+                <div class="forou-group">
+                    <label class="forou-label">Contraseña</label>
+                    @Html.TextBoxFor(m => m.PasswordHash, new { @class = "forou-input", type = "password" })
+                    @Html.ValidationMessageFor(m => m.PasswordHash)
+                </div>
+
+                <div class="forou-group">
+                    <label class="forou-label">Rol</label>
+                    @Html.DropDownListFor(
+                        m => m.Role,
+                        new SelectList(new[]
+                        {
+                            "Estudiante",
+                            "Profesor",
+                            "Administrador"
+                        }, Model.Role),
+                        "Seleccione un rol",
+                        new { @class = "forou-select" }
+                    )
+                    @Html.ValidationMessageFor(m => m.Role)
+                </div>
+
+                <div class="forou-group" style="grid-column: 1 / -1;">
+                    <label class="forou-label">Foto URL</label>
+                    @Html.TextBoxFor(m => m.PhotoUrl, new { @class = "forou-input" })
+                    @Html.ValidationMessageFor(m => m.PhotoUrl)
+                </div>
+            </div>
+
+            <div class="forou-check-row">
+                @Html.CheckBoxFor(m => m.IsActive)
+                <span>Usuario activo</span>
+            </div>
+
+            <div class="forou-btn-row">
+                <button type="submit" class="forou-btn-primary">Guardar cambios</button>
+                <a class="forou-btn-secondary" href="@Url.Action("Users", "Admin")">Volver</a>
+            </div>
+        }
+    </div>
+</div>

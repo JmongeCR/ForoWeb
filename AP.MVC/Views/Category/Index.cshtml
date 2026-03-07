@@ -1,0 +1,90 @@
+﻿@model IEnumerable<AP.Models.Category>
+
+@{
+    ViewBag.Title = "Categorías - ForoU";
+}
+
+<style>
+    .forou-page-title {
+        font-size: 34px;
+        font-weight: 800;
+        color: #fff;
+        margin-bottom: 8px;
+    }
+
+    .forou-page-subtitle {
+        color: #c7d0f1;
+        margin-bottom: 24px;
+        font-size: 17px;
+    }
+
+    .forou-category-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 22px;
+    }
+
+    .forou-category-card {
+        background: #111328;
+        border: 1px solid rgba(123, 137, 255, 0.14);
+        border-radius: 18px;
+        padding: 24px;
+        box-shadow: 0 18px 40px rgba(0,0,0,0.18);
+    }
+
+    .forou-category-name {
+        font-size: 28px;
+        font-weight: 800;
+        color: #ffffff;
+        margin-bottom: 10px;
+    }
+
+    .forou-category-desc {
+        color: #c9d1ee;
+        font-size: 18px;
+        line-height: 1.6;
+        margin-bottom: 18px;
+    }
+
+    .forou-category-btn {
+        display: inline-block;
+        background: linear-gradient(90deg, #5f6fff 0%, #7e49ff 100%);
+        color: #fff;
+        text-decoration: none;
+        padding: 12px 18px;
+        border-radius: 12px;
+        font-weight: 700;
+    }
+
+        .forou-category-btn:hover {
+            color: #fff;
+            text-decoration: none;
+            opacity: 0.95;
+        }
+
+    @@media (max-width: 1000px) {
+        .forou-category-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="forou-page-title">Canales disponibles</div>
+<div class="forou-page-subtitle">
+    Seleccioná una categoría para abrir el canal correspondiente
+</div>
+
+<div class="forou-category-grid">
+    @foreach (var c in Model)
+    {
+        <div class="forou-category-card">
+            <div class="forou-category-name">@c.Name</div>
+            <div class="forou-category-desc">@c.Description</div>
+
+            <a class="forou-category-btn"
+               href="@Url.Action("Index", "Thread", new { categoryId = c.CategoryId })">
+                Abrir canal
+            </a>
+        </div>
+    }
+</div>

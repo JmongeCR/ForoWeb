@@ -1,33 +1,44 @@
 ﻿@{
-    ViewBag.Title = "Home Page";
+    ViewBag.Title = "Inicio - ForoU";
 }
 
-<main>
-    <section class="row" aria-labelledby="aspnetTitle">
-        <h1 id="title">ASP.NET</h1>
-        <p class="lead">ASP.NET is a free web framework for building great Web sites and Web applications using HTML, CSS and JavaScript.</p>
-        <p><a href="https://asp.net" class="btn btn-primary btn-md">Learn more &raquo;</a></p>
-    </section>
+<div class="forou-hero">
+    <div class="forou-hero-top">
+        <h1 class="forou-hero-title">Bienvenido a ForoU</h1>
+        <div class="forou-hero-text">
+            Plataforma académica para consultas, colaboración entre estudiantes y
+            gestión de tareas universitarias.
+        </div>
 
-    <div class="row">
-        <section class="col-md-4" aria-labelledby="gettingStartedTitle">
-            <h2 id="gettingStartedTitle">Getting started</h2>
-            <p>
-                ASP.NET MVC gives you a powerful, patterns-based way to build dynamic websites that
-                enables a clean separation of concerns and gives you full control over markup
-                for enjoyable, agile development.
-            </p>
-            <p><a class="btn btn-outline-dark" href="https://go.microsoft.com/fwlink/?LinkId=301865">Learn more &raquo;</a></p>
-        </section>
-        <section class="col-md-4" aria-labelledby="librariesTitle">
-            <h2 id="librariesTitle">Get more libraries</h2>
-            <p>NuGet is a free Visual Studio extension that makes it easy to add, remove, and update libraries and tools in Visual Studio projects.</p>
-            <p><a class="btn btn-outline-dark" href="https://go.microsoft.com/fwlink/?LinkId=301866">Learn more &raquo;</a></p>
-        </section>
-        <section class="col-md-4" aria-labelledby="hostingTitle">
-            <h2 id="hostingTitle">Web Hosting</h2>
-            <p>You can easily find a web hosting company that offers the right mix of features and price for your applications.</p>
-            <p><a class="btn btn-outline-dark" href="https://go.microsoft.com/fwlink/?LinkId=301867">Learn more &raquo;</a></p>
-        </section>
+        <a class="forou-hero-btn" href="@Url.Action("Index", "Category")">Ir a consultas</a>
     </div>
-</main>
+
+    <div class="forou-card-grid">
+        <div class="forou-feature-card">
+            <h3>Consultas</h3>
+            <p>
+                Realizá preguntas académicas, respondé dudas y participá en conversaciones
+                por materia dentro de tus categorías.
+            </p>
+            <a class="forou-feature-link" href="@Url.Action("Index", "Category")">Abrir módulo</a>
+        </div>
+
+        <div class="forou-feature-card">
+            <h3>Categorías</h3>
+            <p>
+                Navegá por las materias disponibles y entrá a los hilos de discusión
+                según el área académica que necesités.
+            </p>
+            <a class="forou-feature-link" href="@Url.Action("Index", "Category")">Ver categorías</a>
+        </div>
+
+        <div class="forou-feature-card">
+            <h3>Mi perfil</h3>
+            <p>
+                Consultá tu información, correo y asignaturas registradas dentro de
+                la plataforma universitaria.
+            </p>
+            <a class="forou-feature-link" href="@Url.Action("Index", "Profiled")">Ver perfil</a>
+        </div>
+    </div>
+</div>

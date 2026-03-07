@@ -1,0 +1,150 @@
+﻿@model IEnumerable<AP.Models.Thread>
+
+@{
+    ViewBag.Title = "Consultas";
+    var categoryId = ViewBag.CategoryId != null ? (int)ViewBag.CategoryId : 0;
+}
+
+<style>
+    .forou-page-title {
+        font-size: 34px;
+        font-weight: 800;
+        color: #fff;
+        margin-bottom: 8px;
+    }
+
+    .forou-page-subtitle {
+        color: #c7d0f1;
+        margin-bottom: 20px;
+        font-size: 17px;
+    }
+
+    .forou-action-row {
+        margin-bottom: 22px;
+    }
+
+    .forou-primary-btn {
+        display: inline-block;
+        background: linear-gradient(90deg, #5f6fff 0%, #7e49ff 100%);
+        color: #fff;
+        text-decoration: none;
+        padding: 12px 18px;
+        border-radius: 12px;
+        font-weight: 700;
+    }
+
+        .forou-primary-btn:hover {
+            color: #fff;
+            text-decoration: none;
+            opacity: 0.95;
+        }
+
+    .forou-thread-list {
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+    }
+
+    .forou-thread-card {
+        background: #111328;
+        border: 1px solid rgba(123, 137, 255, 0.14);
+        border-radius: 18px;
+        padding: 22px;
+        box-shadow: 0 18px 40px rgba(0,0,0,0.18);
+        display: flex;
+        justify-content: space-between;
+        gap: 24px;
+        align-items: flex-start;
+    }
+
+    .forou-thread-title {
+        font-size: 28px;
+        font-weight: 800;
+        color: #fff;
+        margin-bottom: 10px;
+    }
+
+    .forou-thread-message {
+        color: #d0d7f2;
+        font-size: 18px;
+        line-height: 1.6;
+        margin-bottom: 14px;
+    }
+
+    .forou-thread-meta {
+        color: #aeb8dc;
+        font-size: 15px;
+    }
+
+    .forou-thread-btn {
+        display: inline-block;
+        white-space: nowrap;
+        background: rgba(109,121,255,0.14);
+        border: 1px solid rgba(109,121,255,0.40);
+        color: #eef1ff;
+        text-decoration: none;
+        padding: 10px 16px;
+        border-radius: 10px;
+        font-weight: 700;
+    }
+
+        .forou-thread-btn:hover {
+            color: #fff;
+            text-decoration: none;
+            background: rgba(109,121,255,0.24);
+        }
+
+    .forou-back-link {
+        display: inline-block;
+        margin-top: 20px;
+        color: #cfd5ff;
+        text-decoration: none;
+    }
+
+        .forou-back-link:hover {
+            color: #fff;
+            text-decoration: none;
+        }
+
+    @@media (max-width: 900px) {
+        .forou-thread-card {
+            flex-direction: column;
+        }
+    }
+</style>
+
+<div class="forou-page-title">Consultas</div>
+<div class="forou-page-subtitle">
+    Conversaciones disponibles en esta categoría
+</div>
+
+<div class="forou-action-row">
+    <a class="forou-primary-btn"
+       href="@Url.Action("Create", "Thread", new { categoryId = categoryId })">
+        Crear thread
+    </a>
+</div>
+
+<div class="forou-thread-list">
+    @foreach (var t in Model)
+    {
+        <div class="forou-thread-card">
+            <div>
+                <div class="forou-thread-title">@t.Title</div>
+                <div class="forou-thread-message">@t.Message</div>
+                <div class="forou-thread-meta">
+                    Usuario: @t.UserId | @t.CreatedAt.ToString("dd/MM/yyyy HH:mm")
+                </div>
+            </div>
+
+            <div>
+                <a class="forou-thread-btn"
+                   href="@Url.Action("Details", "Thread", new { id = t.ThreadId })">
+                    Abrir
+                </a>
+            </div>
+        </div>
+    }
+</div>
+
+<a class="forou-back-link" href="@Url.Action("Index", "Category")">Volver a categorías</a>

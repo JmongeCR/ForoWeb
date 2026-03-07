@@ -1,0 +1,199 @@
+﻿AP.MVC.Models.ThreadDetailsVM
+
+@{
+    ViewBag.Title = "Detalle del thread";
+}
+
+<style>
+    .forou-detail-wrap {
+        display: flex;
+        flex-direction: column;
+        gap: 22px;
+    }
+
+    .forou-detail-card {
+        background: #111328;
+        border: 1px solid rgba(123, 137, 255, 0.14);
+        border-radius: 20px;
+        padding: 24px;
+        box-shadow: 0 18px 40px rgba(0,0,0,0.18);
+    }
+
+    .forou-thread-title {
+        font-size: 32px;
+        font-weight: 800;
+        color: #ffffff;
+        margin-bottom: 12px;
+    }
+
+    .forou-thread-message {
+        color: #d0d7f2;
+        font-size: 19px;
+        line-height: 1.7;
+        margin-bottom: 16px;
+    }
+
+    .forou-thread-meta {
+        color: #aeb8dc;
+        font-size: 15px;
+    }
+
+    .forou-section-title {
+        font-size: 28px;
+        font-weight: 800;
+        color: #ffffff;
+        margin: 0 0 16px 0;
+    }
+
+    .forou-replies-list {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .forou-reply-card {
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(123, 137, 255, 0.10);
+        border-radius: 16px;
+        padding: 18px;
+    }
+
+    .forou-reply-message {
+        color: #e6ebff;
+        font-size: 18px;
+        line-height: 1.6;
+        margin-bottom: 12px;
+    }
+
+    .forou-reply-meta {
+        color: #aeb8dc;
+        font-size: 15px;
+    }
+
+    .forou-form-label {
+        display: block;
+        color: #dbe2ff;
+        font-weight: 700;
+        margin-bottom: 8px;
+    }
+
+    .forou-textarea {
+        width: 100%;
+        min-height: 140px;
+        border-radius: 14px;
+        border: 1px solid rgba(123, 137, 255, 0.22);
+        background: #0c1022;
+        color: #eef1ff;
+        padding: 14px;
+        box-sizing: border-box;
+        resize: vertical;
+        font-size: 16px;
+        margin-bottom: 16px;
+    }
+
+        .forou-textarea:focus {
+            outline: none;
+            border-color: #6d79ff;
+            box-shadow: 0 0 0 3px rgba(109,121,255,0.12);
+        }
+
+    .forou-btn-row {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-top: 8px;
+    }
+
+    .forou-btn-primary {
+        display: inline-block;
+        background: linear-gradient(90deg, #5f6fff 0%, #7e49ff 100%);
+        color: #fff;
+        text-decoration: none;
+        padding: 12px 18px;
+        border-radius: 12px;
+        font-weight: 700;
+        border: none;
+        cursor: pointer;
+    }
+
+        .forou-btn-primary:hover {
+            color: #fff;
+            text-decoration: none;
+            opacity: 0.95;
+        }
+
+    .forou-btn-secondary {
+        display: inline-block;
+        background: transparent;
+        color: #dbe2ff;
+        text-decoration: none;
+        padding: 12px 18px;
+        border-radius: 12px;
+        font-weight: 700;
+        border: 1px solid rgba(123, 137, 255, 0.24);
+    }
+
+        .forou-btn-secondary:hover {
+            color: #fff;
+            text-decoration: none;
+            background: rgba(255,255,255,0.04);
+        }
+
+    .forou-empty {
+        color: #b8c3ea;
+        font-size: 16px;
+    }
+</style>
+
+<div class="forou-detail-wrap">
+
+    <div class="forou-detail-card">
+        <div class="forou-thread-title">@Model.Thread.Title</div>
+        <div class="forou-thread-message">@Model.Thread.Message</div>
+        <div class="forou-thread-meta">
+            Usuario: @Model.Thread.UserId | @Model.Thread.CreatedAt.ToString("dd/MM/yyyy HH:mm")
+        </div>
+    </div>
+
+    <div class="forou-detail-card">
+        <h2 class="forou-section-title">Respuestas</h2>
+
+        @if (Model.Replies != null && Model.Replies.Count > 0)
+        {
+            <div class="forou-replies-list">
+                @foreach (var r in Model.Replies)
+                {
+                    <div class="forou-reply-card">
+                        <div class="forou-reply-message">@r.Message</div>
+                        <div class="forou-reply-meta">
+                            Usuario: @r.UserId | @r.CreatedAt.ToString("dd/MM/yyyy HH:mm")
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="forou-empty">Todavía no hay respuestas para este thread.</div>
+        }
+    </div>
+
+    <div class="forou-detail-card">
+        <h2 class="forou-section-title">Responder</h2>
+
+        @using (Html.BeginForm("Create", "Reply", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="ThreadId" value="@Model.Thread.ThreadId" />
+
+            <label class="forou-form-label">Escribí tu respuesta</label>
+            <textarea name="Message" class="forou-textarea"></textarea>
+
+            <div class="forou-btn-row">
+                <button type="submit" class="forou-btn-primary">Publicar respuesta</button>
+                <a class="forou-btn-secondary" href="@Url.Action("Index", "Category")">Volver</a>
+            </div>
+        }
+    </div>
+
+</div>

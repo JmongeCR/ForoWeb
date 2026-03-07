@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{E5241884-31AD-4DA4-8E67-AE5AF9592D1A}</ProjectGuid>
+    <ProjectGuid>{632A4B76-F411-41F1-91FE-4ABF36D7CBDE}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>AP.Models</RootNamespace>
-    <AssemblyName>AP.Models</AssemblyName>
+    <RootNamespace>AP.Business</RootNamespace>
+    <AssemblyName>AP.Business</AssemblyName>
     <TargetFrameworkVersion>v4.8.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -41,12 +41,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Category.cs" />
-    <Compile Include="Reply.cs" />
-    <Compile Include="User.cs" />
-    <Compile Include="Thread.cs" />
-    <Compile Include="Product.cs" />
+    <Compile Include="ReplyBusiness.cs" />
+    <Compile Include="UserBusiness.cs" />
+    <Compile Include="ThreadBusiness.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AP.Data\AP.Data.csproj">
+      <Project>{9cec44ee-3014-4767-9b4f-4d0a67dedd4d}</Project>
+      <Name>AP.Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\AP.Models\AP.Models.csproj">
+      <Project>{e5241884-31ad-4da4-8e67-ae5af9592d1a}</Project>
+      <Name>AP.Models</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
