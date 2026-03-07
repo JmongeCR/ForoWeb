@@ -1,57 +1,149 @@
-/* =========================
-   TABLA: Usuario
-   ========================= */
-CREATE TABLE Usuario (
-    UsuarioId      INT IDENTITY(1,1) PRIMARY KEY,
-    NombreUsuario  NVARCHAR(50)  NOT NULL UNIQUE,
-    Email          NVARCHAR(120) NOT NULL UNIQUE,
-    Rol            NVARCHAR(30)  NOT NULL DEFAULT 'Usuario',
-    Activo         BIT           NOT NULL DEFAULT 1,
-    FechaRegistro  DATETIME2     NOT NULL DEFAULT SYSDATETIME()
+USE [master]
+GO
+
+IF DB_ID('ForoU') IS NULL
+BEGIN
+    CREATE DATABASE [ForoU];
+END
+GO
+
+ALTER DATABASE [ForoU] SET COMPATIBILITY_LEVEL = 150
+GO
+
+USE [ForoU]
+GO
+
+IF OBJECT_ID('dbo.Replies', 'U') IS NOT NULL DROP TABLE dbo.Replies;
+IF OBJECT_ID('dbo.Threads', 'U') IS NOT NULL DROP TABLE dbo.Threads;
+IF OBJECT_ID('dbo.Assignments', 'U') IS NOT NULL DROP TABLE dbo.Assignments;
+IF OBJECT_ID('dbo.Categories', 'U') IS NOT NULL DROP TABLE dbo.Categories;
+IF OBJECT_ID('dbo.Users', 'U') IS NOT NULL DROP TABLE dbo.Users;
+GO
+
+CREATE TABLE [dbo].[Users](
+    [UserId] INT IDENTITY(1,1) NOT NULL,
+    [FullName] NVARCHAR(100) NOT NULL,
+    [Email] NVARCHAR(100) NOT NULL,
+    [Role] NVARCHAR(20) NOT NULL,
+    [IsActive] BIT NOT NULL CONSTRAINT DF_Users_IsActive DEFAULT ((1)),
+    [PasswordHash] NVARCHAR(255) NOT NULL,
+    [PhotoUrl] NVARCHAR(255) NULL,
+    CONSTRAINT PK_Users PRIMARY KEY CLUSTERED ([UserId] ASC),
+    CONSTRAINT UQ_Users_Email UNIQUE ([Email]),
+    CONSTRAINT CK_Users_Role CHECK ([Role] IN ('Profesor', 'Estudiante', 'Administrador'))
 );
+GO
 
-/* =========================
-   TABLA: Categoria (temas del foro)
-   ========================= */
-CREATE TABLE Categoria (
-    CategoriaId    INT IDENTITY(1,1) PRIMARY KEY,
-    Nombre         NVARCHAR(80)  NOT NULL UNIQUE,
-    Descripcion    NVARCHAR(200),
-    Activa         BIT           NOT NULL DEFAULT 1
+CREATE TABLE [dbo].[Categories](
+    [CategoryId] INT IDENTITY(1,1) NOT NULL,
+    [Name] NVARCHAR(100) NOT NULL,
+    [Description] NVARCHAR(300) NULL,
+    CONSTRAINT PK_Categories PRIMARY KEY CLUSTERED ([CategoryId] ASC),
+    CONSTRAINT UQ_Categories_Name UNIQUE ([Name])
 );
+GO
 
-/* =========================
-   TABLA: Asignacion (Hilo / Tema)
-   ========================= */
-CREATE TABLE Asignacion (
-    AsignacionId   INT IDENTITY(1,1) PRIMARY KEY,
-    CategoriaId    INT NOT NULL,
-    UsuarioId      INT NOT NULL,
-    Titulo         NVARCHAR(150) NOT NULL,
-    Contenido      NVARCHAR(MAX) NOT NULL,
-    Estado         NVARCHAR(20)  NOT NULL DEFAULT 'Abierto',
-    FechaCreacion  DATETIME2     NOT NULL DEFAULT SYSDATETIME(),
-
-    CONSTRAINT FK_Asignacion_Categoria
-        FOREIGN KEY (CategoriaId) REFERENCES Categoria(CategoriaId),
-
-    CONSTRAINT FK_Asignacion_Usuario
-        FOREIGN KEY (UsuarioId) REFERENCES Usuario(UsuarioId)
+CREATE TABLE [dbo].[Threads](
+    [ThreadId] INT IDENTITY(1,1) NOT NULL,
+    [CategoryId] INT NOT NULL,
+    [UserId] INT NOT NULL,
+    [Title] NVARCHAR(150) NOT NULL,
+    [Message] NVARCHAR(MAX) NOT NULL,
+    [CreatedAt] DATETIME NOT NULL CONSTRAINT DF_Threads_CreatedAt DEFAULT (GETDATE()),
+    CONSTRAINT PK_Threads PRIMARY KEY CLUSTERED ([ThreadId] ASC)
 );
+GO
 
-/* =========================
-   TABLA: Consulta (Respuestas al hilo)
-   ========================= */
-CREATE TABLE Consulta (
-    ConsultaId     INT IDENTITY(1,1) PRIMARY KEY,
-    AsignacionId   INT NOT NULL,
-    UsuarioId      INT NOT NULL,
-    Mensaje        NVARCHAR(MAX) NOT NULL,
-    FechaCreacion  DATETIME2     NOT NULL DEFAULT SYSDATETIME(),
-
-    CONSTRAINT FK_Consulta_Asignacion
-        FOREIGN KEY (AsignacionId) REFERENCES Asignacion(AsignacionId),
-
-    CONSTRAINT FK_Consulta_Usuario
-        FOREIGN KEY (UsuarioId) REFERENCES Usuario(UsuarioId)
+CREATE TABLE [dbo].[Replies](
+    [ReplyId] INT IDENTITY(1,1) NOT NULL,
+    [ThreadId] INT NOT NULL,
+    [UserId] INT NOT NULL,
+    [Message] NVARCHAR(MAX) NOT NULL,
+    [CreatedAt] DATETIME NOT NULL CONSTRAINT DF_Replies_CreatedAt DEFAULT (GETDATE()),
+    CONSTRAINT PK_Replies PRIMARY KEY CLUSTERED ([ReplyId] ASC)
 );
+GO
+
+CREATE TABLE [dbo].[Assignments](
+    [AssignmentId] INT IDENTITY(1,1) NOT NULL,
+    [CategoryId] INT NOT NULL,
+    [TeacherId] INT NOT NULL,
+    [Title] NVARCHAR(150) NOT NULL,
+    [Description] NVARCHAR(MAX) NOT NULL,
+    [DueDate] DATE NOT NULL,
+    CONSTRAINT PK_Assignments PRIMARY KEY CLUSTERED ([AssignmentId] ASC)
+);
+GO
+
+ALTER TABLE [dbo].[Threads]  WITH CHECK ADD CONSTRAINT FK_Threads_Categories
+FOREIGN KEY([CategoryId]) REFERENCES [dbo].[Categories] ([CategoryId]);
+GO
+
+ALTER TABLE [dbo].[Threads]  WITH CHECK ADD CONSTRAINT FK_Threads_Users
+FOREIGN KEY([UserId]) REFERENCES [dbo].[Users] ([UserId]);
+GO
+
+ALTER TABLE [dbo].[Replies]  WITH CHECK ADD CONSTRAINT FK_Replies_Threads
+FOREIGN KEY([ThreadId]) REFERENCES [dbo].[Threads] ([ThreadId]);
+GO
+
+ALTER TABLE [dbo].[Replies]  WITH CHECK ADD CONSTRAINT FK_Replies_Users
+FOREIGN KEY([UserId]) REFERENCES [dbo].[Users] ([UserId]);
+GO
+
+ALTER TABLE [dbo].[Assignments]  WITH CHECK ADD CONSTRAINT FK_Assignments_Categories
+FOREIGN KEY([CategoryId]) REFERENCES [dbo].[Categories] ([CategoryId]);
+GO
+
+ALTER TABLE [dbo].[Assignments]  WITH CHECK ADD CONSTRAINT FK_Assignments_Users
+FOREIGN KEY([TeacherId]) REFERENCES [dbo].[Users] ([UserId]);
+GO
+}
+
+
+---DATOS DE PRUEBA--
+
+USE [ForoU]
+GO
+
+SET IDENTITY_INSERT dbo.Users ON;
+INSERT INTO dbo.Users (UserId, FullName, Email, Role, IsActive, PasswordHash, PhotoUrl) VALUES
+(1, 'Chris Beita', 'chrisbeita@ufide.ac.cr', 'Administrador', 1, '123456', '~/Content/img/default-avatar.png'),
+(2, 'Estudiante Demo', 'estudiante@ForoU.com', 'Estudiante', 1, '123456', '~/Content/img/default-avatar.png'),
+(3, 'Profesor Demo', 'profesor@ForoU.com', 'Profesor', 1, '123456', '~/Content/img/default-avatar.png');
+SET IDENTITY_INSERT dbo.Users OFF;
+GO
+
+SET IDENTITY_INSERT dbo.Categories ON;
+INSERT INTO dbo.Categories (CategoryId, Name, Description) VALUES
+(1, 'Bases de Datos', 'Consultas sobre SQL, modelado y administración de bases de datos.'),
+(2, 'Programación', 'Consultas sobre desarrollo, lógica y proyectos de programación.'),
+(3, 'Ingeniería de Software', 'Buenas prácticas, UML, documentación y metodologías.'),
+(4, 'Redes', 'Consultas sobre redes, conectividad e infraestructura.'),
+(5, 'Sistemas Operativos', 'Dudas sobre Windows, Linux y administración de sistemas.');
+SET IDENTITY_INSERT dbo.Categories OFF;
+GO
+
+SET IDENTITY_INSERT dbo.Threads ON;
+INSERT INTO dbo.Threads (ThreadId, CategoryId, UserId, Title, Message, CreatedAt) VALUES
+(1, 2, 2, 'Ayuda con proyecto de programación avanzada', 'No me está funcionando el proyecto y necesito revisar la estructura del código.', GETDATE()),
+(2, 1, 2, 'Consulta sobre Data Warehouse', 'Tengo dudas sobre cómo estructurar el dataset y las dimensiones.', GETDATE()),
+(3, 3, 2, 'Consulta sobre tarea del martes', 'Necesito apoyo con la tarea y ver si podemos coordinarnos por Teams.', GETDATE());
+SET IDENTITY_INSERT dbo.Threads OFF;
+GO
+
+SET IDENTITY_INSERT dbo.Replies ON;
+INSERT INTO dbo.Replies (ReplyId, ThreadId, UserId, Message, CreatedAt) VALUES
+(1, 1, 3, 'Revisá primero la configuración del proyecto y las referencias.', GETDATE()),
+(2, 2, 3, 'Podés empezar definiendo hechos y dimensiones principales.', GETDATE()),
+(3, 3, 1, 'Sí, podríamos coordinarnos en Teams para revisarlo.', GETDATE());
+SET IDENTITY_INSERT dbo.Replies OFF;
+GO
+
+SET IDENTITY_INSERT dbo.Assignments ON;
+INSERT INTO dbo.Assignments (AssignmentId, CategoryId, TeacherId, Title, Description, DueDate) VALUES
+(1, 1, 3, 'Modelo relacional', 'Diseñar el modelo relacional de la práctica.', '2026-03-15'),
+(2, 2, 3, 'Proyecto final de programación', 'Avance 1 del proyecto final.', '2026-03-20'),
+(3, 3, 3, 'Documento UML', 'Entregar diagrama de clases y casos de uso.', '2026-03-18');
+SET IDENTITY_INSERT dbo.Assignments OFF;
+GO
