@@ -69,7 +69,7 @@
         }
 
     .forou-check-row {
-        margin-top: 8px;
+        margin-top: 16px;
         display: flex;
         align-items: center;
         gap: 10px;
@@ -95,12 +95,6 @@
         cursor: pointer;
     }
 
-        .forou-btn-primary:hover {
-            color: #fff;
-            text-decoration: none;
-            opacity: 0.95;
-        }
-
     .forou-btn-secondary {
         display: inline-block;
         background: transparent;
@@ -110,17 +104,6 @@
         border-radius: 12px;
         font-weight: 700;
         border: 1px solid rgba(123, 137, 255, 0.24);
-    }
-
-        .forou-btn-secondary:hover {
-            color: #fff;
-            text-decoration: none;
-            background: rgba(255,255,255,0.04);
-        }
-
-    .field-validation-error,
-    .validation-summary-errors {
-        color: #ffb4c2;
     }
 
     @@media (max-width: 900px) {
@@ -138,47 +121,30 @@
         @using (Html.BeginForm("CreateUser", "Admin", FormMethod.Post))
         {
             @Html.AntiForgeryToken()
-            @Html.ValidationSummary(true, "", new { @class = "validation-summary-errors" })
 
             <div class="forou-grid">
                 <div class="forou-group">
                     <label class="forou-label">Nombre completo</label>
                     @Html.TextBoxFor(m => m.FullName, new { @class = "forou-input" })
-                    @Html.ValidationMessageFor(m => m.FullName)
                 </div>
 
                 <div class="forou-group">
                     <label class="forou-label">Correo</label>
                     @Html.TextBoxFor(m => m.Email, new { @class = "forou-input" })
-                    @Html.ValidationMessageFor(m => m.Email)
                 </div>
 
                 <div class="forou-group">
                     <label class="forou-label">Contraseña</label>
                     @Html.TextBoxFor(m => m.PasswordHash, new { @class = "forou-input", type = "password" })
-                    @Html.ValidationMessageFor(m => m.PasswordHash)
                 </div>
 
                 <div class="forou-group">
                     <label class="forou-label">Rol</label>
                     @Html.DropDownListFor(
                         m => m.Role,
-                        new SelectList(new[]
-                        {
-                            "Estudiante",
-                            "Profesor",
-                            "Administrador"
-                        }),
-                        "Seleccione un rol",
+                        new SelectList(new[] { "Estudiante", "Profesor", "Administrador" }),
                         new { @class = "forou-select" }
                     )
-                    @Html.ValidationMessageFor(m => m.Role)
-                </div>
-
-                <div class="forou-group" style="grid-column: 1 / -1;">
-                    <label class="forou-label">Foto URL</label>
-                    @Html.TextBoxFor(m => m.PhotoUrl, new { @class = "forou-input" })
-                    @Html.ValidationMessageFor(m => m.PhotoUrl)
                 </div>
             </div>
 
