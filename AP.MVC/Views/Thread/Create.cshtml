@@ -1,35 +1,162 @@
 ﻿@model AP.Models.Thread
+
 @{
-    ViewBag.Title = "Crear Thread";
+    ViewBag.Title = "Crear nueva publicación";
+    var categoryId = ViewBag.CategoryId != null ? (int)ViewBag.CategoryId : 0;
 }
 
-<div class="page-title">Crear nueva consulta</div>
-<div class="page-sub">Publicá una duda o conversación en esta categoría</div>
-
-<div class="forum-card">
-    @using (Html.BeginForm())
-    {
-        @Html.AntiForgeryToken()
-        @Html.HiddenFor(m => m.CategoryId)
-
-        <div class="form-group mb-3">
-            <label class="form-label-dark">Título</label>
-            @Html.TextBoxFor(m => m.Title, new { @class = "form-control forum-input" })
-        </div>
-
-        <div class="form-group mb-3">
-            <label class="form-label-dark">Mensaje</label>
-            @Html.TextAreaFor(m => m.Message, new { @class = "form-control forum-input", rows = 6 })
-        </div>
-
-        <button type="submit" class="btn btn-primary">Crear</button>
-
-        @Html.ActionLink(
-            "Cancelar",
-            "Index",
-            "Thread",
-            new { categoryId = Model.CategoryId },
-            new { @class = "btn btn-outline-light ms-2" }
-        )
+<style>
+    .forou-create-wrap {
+        max-width: 980px;
+        margin: 0 auto;
     }
+
+    .forou-create-card {
+        background: #111328;
+        border: 1px solid rgba(123, 137, 255, 0.14);
+        border-radius: 20px;
+        padding: 28px;
+        box-shadow: 0 18px 40px rgba(0,0,0,0.18);
+    }
+
+    .forou-create-title {
+        font-size: 34px;
+        font-weight: 800;
+        color: #fff;
+        margin-bottom: 8px;
+    }
+
+    .forou-create-subtitle {
+        color: #c7d0f1;
+        margin-bottom: 24px;
+        font-size: 17px;
+    }
+
+    .forou-group {
+        margin-bottom: 20px;
+    }
+
+    .forou-label {
+        display: block;
+        color: #dbe2ff;
+        font-weight: 700;
+        margin-bottom: 8px;
+        font-size: 16px;
+    }
+
+    .forou-input {
+        width: 100%;
+        height: 50px;
+        border-radius: 12px;
+        border: 1px solid rgba(123, 137, 255, 0.22);
+        background: #0c1022;
+        color: #eef1ff;
+        padding: 0 14px;
+        box-sizing: border-box;
+        font-size: 16px;
+    }
+
+    .forou-textarea {
+        width: 100%;
+        min-height: 180px;
+        border-radius: 14px;
+        border: 1px solid rgba(123, 137, 255, 0.22);
+        background: #0c1022;
+        color: #eef1ff;
+        padding: 14px;
+        box-sizing: border-box;
+        font-size: 16px;
+        resize: vertical;
+    }
+
+        .forou-input:focus,
+        .forou-textarea:focus {
+            outline: none;
+            border-color: #6d79ff;
+            box-shadow: 0 0 0 3px rgba(109,121,255,0.12);
+        }
+
+    .forou-btn-row {
+        margin-top: 26px;
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .forou-btn-primary {
+        display: inline-block;
+        background: linear-gradient(90deg, #5f6fff 0%, #7e49ff 100%);
+        color: #fff;
+        text-decoration: none;
+        padding: 12px 18px;
+        border-radius: 12px;
+        font-weight: 700;
+        border: none;
+        cursor: pointer;
+    }
+
+        .forou-btn-primary:hover {
+            color: #fff;
+            text-decoration: none;
+            opacity: 0.95;
+        }
+
+    .forou-btn-secondary {
+        display: inline-block;
+        background: transparent;
+        color: #dbe2ff;
+        text-decoration: none;
+        padding: 12px 18px;
+        border-radius: 12px;
+        font-weight: 700;
+        border: 1px solid rgba(123, 137, 255, 0.24);
+    }
+
+        .forou-btn-secondary:hover {
+            color: #fff;
+            text-decoration: none;
+            background: rgba(255,255,255,0.04);
+        }
+
+    .field-validation-error,
+    .validation-summary-errors {
+        color: #ffb4c2;
+    }
+</style>
+
+<div class="forou-create-wrap">
+    <div class="forou-create-card">
+        <div class="forou-create-title">Crear nueva publicación</div>
+        <div class="forou-create-subtitle">
+            Publicá una duda o conversación en esta categoría
+        </div>
+
+        @using (Html.BeginForm("Create", "Thread", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary(true, "", new { @class = "validation-summary-errors" })
+
+            <input type="hidden" name="CategoryId" value="@categoryId" />
+
+            <div class="forou-group">
+                <label class="forou-label">Título</label>
+                @Html.TextBoxFor(m => m.Title, new { @class = "forou-input" })
+                @Html.ValidationMessageFor(m => m.Title)
+            </div>
+
+            <div class="forou-group">
+                <label class="forou-label">Mensaje</label>
+                @Html.TextAreaFor(m => m.Message, new { @class = "forou-textarea" })
+                @Html.ValidationMessageFor(m => m.Message)
+            </div>
+
+            <div class="forou-btn-row">
+                <button type="submit" class="forou-btn-primary">Publicar</button>
+                <a class="forou-btn-secondary"
+                   href="@Url.Action("Index", "Thread", new { categoryId = categoryId })">
+                    Cancelar
+                </a>
+            </div>
+        }
+    </div>
 </div>
