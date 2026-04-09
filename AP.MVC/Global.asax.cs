@@ -1,4 +1,5 @@
-﻿using System.Web.Mvc;
+﻿using System.Text;
+using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
 
@@ -12,6 +13,13 @@ namespace AP.MVC
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
+        }
+
+        protected void Application_BeginRequest()
+        {
+            Response.ContentEncoding = Encoding.UTF8;
+            Response.Charset = "utf-8";
+            Request.ContentEncoding = Encoding.UTF8;
         }
     }
 }

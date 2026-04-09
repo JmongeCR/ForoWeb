@@ -1,4 +1,3 @@
-﻿using System;
 using System.Web.Mvc;
 using AP.Business;
 
@@ -11,6 +10,9 @@ namespace AP.MVC.Controllers
         [HttpGet]
         public ActionResult Login()
         {
+            if (Session["UserId"] != null)
+                return RedirectToAction("Index", "Home");
+
             return View();
         }
 
@@ -18,11 +20,20 @@ namespace AP.MVC.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Login(string email, string password)
         {
+            email = (email ?? string.Empty).Trim();
+            password = password ?? string.Empty;
+
+            if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
+            {
+                ViewBag.Error = "Debés ingresar el correo y la contraseña.";
+                return View();
+            }
+
             var user = _userBusiness.ValidateLogin(email, password);
 
             if (user == null)
             {
-                ViewBag.Error = "Correo o contraseña incorrectos.";
+                ViewBag.Error = "Correo o contraseña incorrectos, o el usuario está inactivo.";
                 return View();
             }
 

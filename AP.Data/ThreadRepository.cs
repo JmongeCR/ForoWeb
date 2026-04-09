@@ -1,6 +1,5 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Data.SqlClient;
 using AP.Models;
 
@@ -16,40 +15,37 @@ namespace AP.Data
 
             using (SqlConnection cn = _db.GetConnection())
             using (SqlCommand cmd = new SqlCommand(@"
-                SELECT ThreadId, CategoryId, UserId, Title, Message, CreatedAt
-                FROM Threads
-                ORDER BY CreatedAt DESC", cn))
+                SELECT t.ThreadId, t.CategoryId, t.UserId, t.Title, t.Message, t.CreatedAt,
+                       u.FullName AS UserName
+                FROM Threads t
+                INNER JOIN Users u ON u.UserId = t.UserId
+                ORDER BY t.CreatedAt DESC", cn))
             {
                 cn.Open();
                 using (SqlDataReader dr = cmd.ExecuteReader())
                 {
                     while (dr.Read())
                     {
-                        list.Add(new Thread
-                        {
-                            ThreadId = Convert.ToInt32(dr["ThreadId"]),
-                            CategoryId = Convert.ToInt32(dr["CategoryId"]),
-                            UserId = Convert.ToInt32(dr["UserId"]),
-                            Title = dr["Title"].ToString(),
-                            Message = dr["Message"].ToString(),
-                            CreatedAt = Convert.ToDateTime(dr["CreatedAt"])
-                        });
+                        list.Add(MapThread(dr));
                     }
                 }
             }
 
             return list;
         }
+
         public List<Thread> GetThreadsByCategory(int categoryId)
         {
             var list = new List<Thread>();
 
             using (SqlConnection cn = _db.GetConnection())
             using (SqlCommand cmd = new SqlCommand(@"
-        SELECT ThreadId, CategoryId, UserId, Title, Message, CreatedAt
-        FROM Threads
-        WHERE CategoryId = @CategoryId
-        ORDER BY CreatedAt DESC", cn))
+                SELECT t.ThreadId, t.CategoryId, t.UserId, t.Title, t.Message, t.CreatedAt,
+                       u.FullName AS UserName
+                FROM Threads t
+                INNER JOIN Users u ON u.UserId = t.UserId
+                WHERE t.CategoryId = @CategoryId
+                ORDER BY t.CreatedAt DESC", cn))
             {
                 cmd.Parameters.AddWithValue("@CategoryId", categoryId);
 
@@ -58,30 +54,25 @@ namespace AP.Data
                 {
                     while (dr.Read())
                     {
-                        list.Add(new Thread
-                        {
-                            ThreadId = Convert.ToInt32(dr["ThreadId"]),
-                            CategoryId = Convert.ToInt32(dr["CategoryId"]),
-                            UserId = Convert.ToInt32(dr["UserId"]),
-                            Title = dr["Title"].ToString(),
-                            Message = dr["Message"].ToString(),
-                            CreatedAt = Convert.ToDateTime(dr["CreatedAt"])
-                        });
+                        list.Add(MapThread(dr));
                     }
                 }
             }
 
             return list;
         }
+
         public Thread GetThread(int id)
         {
             Thread t = null;
 
             using (SqlConnection cn = _db.GetConnection())
             using (SqlCommand cmd = new SqlCommand(@"
-                SELECT ThreadId, CategoryId, UserId, Title, Message, CreatedAt
-                FROM Threads
-                WHERE ThreadId = @id", cn))
+                SELECT t.ThreadId, t.CategoryId, t.UserId, t.Title, t.Message, t.CreatedAt,
+                       u.FullName AS UserName
+                FROM Threads t
+                INNER JOIN Users u ON u.UserId = t.UserId
+                WHERE t.ThreadId = @id", cn))
             {
                 cmd.Parameters.AddWithValue("@id", id);
                 cn.Open();
@@ -90,15 +81,7 @@ namespace AP.Data
                 {
                     if (dr.Read())
                     {
-                        t = new Thread
-                        {
-                            ThreadId = Convert.ToInt32(dr["ThreadId"]),
-                            CategoryId = Convert.ToInt32(dr["CategoryId"]),
-                            UserId = Convert.ToInt32(dr["UserId"]),
-                            Title = dr["Title"].ToString(),
-                            Message = dr["Message"].ToString(),
-                            CreatedAt = Convert.ToDateTime(dr["CreatedAt"])
-                        };
+                        t = MapThread(dr);
                     }
                 }
             }
@@ -115,13 +98,27 @@ namespace AP.Data
             {
                 cmd.Parameters.AddWithValue("@CategoryId", model.CategoryId);
                 cmd.Parameters.AddWithValue("@UserId", model.UserId);
-                cmd.Parameters.AddWithValue("@Title", model.Title);
-                cmd.Parameters.AddWithValue("@Message", model.Message);
+                cmd.Parameters.AddWithValue("@Title", model.Title.Trim());
+                cmd.Parameters.AddWithValue("@Message", model.Message.Trim());
                 cmd.Parameters.AddWithValue("@CreatedAt", model.CreatedAt);
 
                 cn.Open();
                 cmd.ExecuteNonQuery();
             }
+        }
+
+        private Thread MapThread(SqlDataReader dr)
+        {
+            return new Thread
+            {
+                ThreadId = Convert.ToInt32(dr["ThreadId"]),
+                CategoryId = Convert.ToInt32(dr["CategoryId"]),
+                UserId = Convert.ToInt32(dr["UserId"]),
+                Title = dr["Title"].ToString(),
+                Message = dr["Message"].ToString(),
+                CreatedAt = Convert.ToDateTime(dr["CreatedAt"]),
+                UserName = dr["UserName"].ToString()
+            };
         }
     }
 }

@@ -1,86 +1,32 @@
-﻿@{
+@{
     ViewBag.Title = "Login - ForoU";
-    Layout = null;
+    Layout = "~/Views/Shared/_LayoutLogin.cshtml";
 }
 
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>@ViewBag.Title</title>
-    @Styles.Render("~/Content/css")
-</head>
-<body style="margin:0;">
-    <div class="container-fluid p-0">
-        <div class="row g-0" style="min-height: 100vh;">
+<div class="forou-form-title">Iniciar sesión</div>
+<div class="forou-form-subtitle">Entrá con tu cuenta para usar el foro.</div>
 
-            <div class="col-lg-6 d-none d-lg-flex text-white"
-                 style="background: linear-gradient(135deg, #3b5bdb, #1c2b8a);">
-                <div class="p-5 d-flex flex-column justify-content-center w-100">
-                    <div style="font-size:48px; font-weight:700; line-height:1.1;">
-                        Hola, bienvenido a<br />
-                        <span style="display:inline-block; margin-top:8px;">ForoU 👋</span>
-                    </div>
+@if (ViewBag.Error != null)
+{
+    <div class="forou-alert">@ViewBag.Error</div>
+}
 
-                    <p class="mt-4" style="max-width:420px; opacity:.9; font-size:16px;">
-                        El foro de la U que te ayuda con tareas, dudas y a comunicarte con tus compañeros.
-                    </p>
+@using (Html.BeginForm("Login", "Access", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
 
-                    <div class="mt-4" style="opacity:.85;">
-                        <small>Proyecto académico • Universidad Fidélitas</small>
-                    </div>
-                </div>
-            </div>
+    <label class="forou-form-label">Correo</label>
+    <input class="forou-input" type="email" name="email" placeholder="usuario@correo.com" required />
 
-            <div class="col-12 col-lg-6 d-flex align-items-center justify-content-center bg-light">
-                <div class="w-100" style="max-width:420px; padding:28px;">
-                    <div class="mb-4 text-center">
-                        <h2 class="mb-1">Bienvenido</h2>
-                        <p class="text-muted mb-0">Iniciá sesión con tu cuenta de la U para continuar</p>
-                    </div>
+    <label class="forou-form-label">Contraseña</label>
+    <input class="forou-input" type="password" name="password" placeholder="••••••••" required />
 
-                    <div class="card shadow-sm border-0">
-                        <div class="card-body p-4">
-                            <form method="post" action="@Url.Action("Login", "Access")">
-                                <div class="mb-3">
-                                    <label class="form-label">Correo o usuario</label>
-                                    <input class="form-control" type="text" name="username" placeholder="correo" required />
-                                </div>
+    <button class="forou-btn-primary" type="submit">Entrar</button>
+}
 
-                                <div class="mb-3">
-                                    <label class="form-label">Contraseña</label>
-                                    <input class="form-control" type="password" name="password" placeholder="••••••••" required />
-                                </div>
-
-                                <div class="d-flex justify-content-end mb-3">
-                                    <a class="small text-decoration-none" href="#">¿Olvidaste tu contraseña?</a>
-                                </div>
-
-                                <button class="btn btn-primary w-100" type="submit">Entrar</button>
-
-                                <div class="text-center mt-3">
-                                    <small class="text-muted d-block">
-                                        ¿No tenés cuenta?
-                                    </small>
-                                    <small class="text-muted d-block">
-                                        Comunicate con el personal de la U para crear una cuenta.
-                                    </small>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-
-                    <p class="text-center text-muted mt-3 mb-0">
-                        <small>© @DateTime.Now.Year ForoU</small>
-                    </p>
-                </div>
-            </div>
-
-        </div>
-    </div>
-
-    @Scripts.Render("~/bundles/jquery")
-    @Scripts.Render("~/bundles/bootstrap")
-</body>
-</html>
+<div style="margin-top:18px; color:#55607a; font-size:14px; line-height:1.6;">
+    <strong>Usuarios de prueba:</strong><br />
+    Administrador: chrisbeita@ufide.ac.cr / 123456<br />
+    Estudiante: estudiante@ForoU.com / 123456<br />
+    Profesor: profesor@ForoU.com / 123456
+</div>

@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using AP.Models;
 
-namespace APMVC.Models
+namespace AP.MVC.Models
 {
     public class ThreadDetailsVM
     {

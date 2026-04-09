@@ -1,0 +1,61 @@
+@using System.Linq
+@model IEnumerable<AP.Models.Assignment>
+
+@{
+    ViewBag.Title = "Tareas";
+    var role = Session["UserRole"] != null ? Session["UserRole"].ToString() : "";
+    var canCreate = role == "Administrador" || role == "Profesor";
+}
+
+<style>
+    .forou-page-title { font-size:34px; font-weight:800; color:#fff; margin-bottom:8px; }
+    .forou-page-subtitle { color:#c7d0f1; margin-bottom:20px; font-size:17px; }
+    .forou-action-row { margin-bottom:22px; }
+    .forou-primary-btn { display:inline-block; background:linear-gradient(90deg,#5f6fff 0%,#7e49ff 100%); color:#fff; text-decoration:none; padding:12px 18px; border-radius:12px; font-weight:700; }
+    .forou-success { background:rgba(120,200,120,.14); color:#b8f3b8; border:1px solid rgba(120,200,120,.24); border-radius:12px; padding:14px 16px; margin-bottom:18px; }
+    .forou-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:18px; }
+    .forou-card { background:#111328; border:1px solid rgba(123,137,255,0.14); border-radius:18px; padding:22px; box-shadow:0 18px 40px rgba(0,0,0,0.18); }
+    .forou-card h3 { margin:0 0 12px 0; color:#fff; font-size:24px; }
+    .forou-meta { color:#aeb8dc; font-size:14px; margin-bottom:8px; }
+    .forou-desc { color:#d0d7f2; font-size:16px; line-height:1.6; margin-bottom:18px; }
+    .forou-link { display:inline-block; color:#dbe2ff; text-decoration:none; font-weight:700; border:1px solid rgba(123,137,255,0.24); padding:10px 14px; border-radius:10px; }
+    .forou-link:hover { text-decoration:none; color:#fff; background:rgba(255,255,255,0.04); }
+    .forou-empty { color:#c7d0f1; }
+    @@media (max-width:1000px) { .forou-grid { grid-template-columns:1fr; } }
+</style>
+
+<div class="forou-page-title">Tareas</div>
+<div class="forou-page-subtitle">Listado de tareas registradas en el sistema.</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="forou-success">@TempData["Success"]</div>
+}
+
+@if (canCreate)
+{
+    <div class="forou-action-row">
+        <a class="forou-primary-btn" href="@Url.Action("Create", "Assignment")">Registrar tarea</a>
+    </div>
+}
+
+@if (Model != null && Model.Any())
+{
+    <div class="forou-grid">
+        @foreach (var item in Model)
+        {
+            <div class="forou-card">
+                <h3>@item.Title</h3>
+                <div class="forou-meta">Categoría: @item.CategoryName</div>
+                <div class="forou-meta">Publicada por: @item.TeacherName</div>
+                <div class="forou-meta">Entrega: @item.DueDate.ToString("dd/MM/yyyy")</div>
+                <div class="forou-desc">@(item.Description.Length > 140 ? item.Description.Substring(0, 140) + "..." : item.Description)</div>
+                <a class="forou-link" href="@Url.Action("Details", "Assignment", new { id = item.AssignmentId })">Ver detalle</a>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <div class="forou-empty">No hay tareas registradas todavía.</div>
+}

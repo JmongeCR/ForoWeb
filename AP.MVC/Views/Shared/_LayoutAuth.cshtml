@@ -1,6 +1,72 @@
 ﻿@{
     var userRole = Session["UserRole"] != null ? Session["UserRole"].ToString() : "";
     var userName = Session["UserName"] != null ? Session["UserName"].ToString() : "Usuario";
+    var currentController = ViewContext.RouteData.Values["controller"] != null ? ViewContext.RouteData.Values["controller"].ToString() : "";
+    var currentAction = ViewContext.RouteData.Values["action"] != null ? ViewContext.RouteData.Values["action"].ToString() : "";
+    var roleLabel = userRole == "Administrador" ? "Panel administrativo" : (userRole == "Profesor" ? "Panel docente" : "Panel estudiantil");
+}
+
+@functions {
+    public System.Web.IHtmlString AppIcon(string name)
+    {
+        var svg = "";
+
+        switch ((name ?? string.Empty).ToLower())
+        {
+            case "home":
+                svg = "<svg viewBox='0 0 24 24' aria-hidden='true'><path d='M3 10.5 12 3l9 7.5'/><path d='M5 9.5V21h14V9.5'/><path d='M9.5 21v-6h5v6'/></svg>";
+                break;
+            case "categories":
+                svg = "<svg viewBox='0 0 24 24' aria-hidden='true'><rect x='3' y='4' width='7' height='7' rx='2'/><rect x='14' y='4' width='7' height='7' rx='2'/><rect x='3' y='13' width='7' height='7' rx='2'/><rect x='14' y='13' width='7' height='7' rx='2'/></svg>";
+                break;
+            case "threads":
+                svg = "<svg viewBox='0 0 24 24' aria-hidden='true'><path d='M6 18h6l4 3v-3h2a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3H6A3 3 0 0 0 3 7v8a3 3 0 0 0 3 3Z'/><path d='M8 9h8'/><path d='M8 13h5'/></svg>";
+                break;
+            case "tasks":
+                svg = "<svg viewBox='0 0 24 24' aria-hidden='true'><path d='M8 4h8'/><path d='M9 3v3'/><path d='M15 3v3'/><rect x='4' y='5' width='16' height='16' rx='3'/><path d='M8 11h8'/><path d='M8 15h5'/></svg>";
+                break;
+            case "profile":
+                svg = "<svg viewBox='0 0 24 24' aria-hidden='true'><circle cx='12' cy='8' r='4'/><path d='M5 20a7 7 0 0 1 14 0'/></svg>";
+                break;
+            case "admin":
+                svg = "<svg viewBox='0 0 24 24' aria-hidden='true'><path d='m12 3 7 4v5c0 4.5-2.8 7.5-7 9-4.2-1.5-7-4.5-7-9V7l7-4Z'/><path d='m9.5 12 1.8 1.8L15 10'/></svg>";
+                break;
+            case "logout":
+                svg = "<svg viewBox='0 0 24 24' aria-hidden='true'><path d='M10 17v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v2'/><path d='M21 12H9'/><path d='m16 7 5 5-5 5'/></svg>";
+                break;
+            case "menu":
+                svg = "<svg viewBox='0 0 24 24' aria-hidden='true'><path d='M4 7h16'/><path d='M4 12h16'/><path d='M4 17h16'/></svg>";
+                break;
+            default:
+                svg = "<svg viewBox='0 0 24 24' aria-hidden='true'><circle cx='12' cy='12' r='8'/></svg>";
+                break;
+        }
+
+        return new System.Web.HtmlString(svg);
+    }
+
+    public string GetInitials(string fullName)
+    {
+        if (string.IsNullOrWhiteSpace(fullName))
+        {
+            return "U";
+        }
+
+        var parts = fullName.Trim().Split(new[] { ' ' }, System.StringSplitOptions.RemoveEmptyEntries);
+        if (parts.Length == 1)
+        {
+            return parts[0].Substring(0, 1).ToUpper();
+        }
+
+        return (parts[0].Substring(0, 1) + parts[parts.Length - 1].Substring(0, 1)).ToUpper();
+    }
+
+    public string NavState(string currentController, string currentAction, string targetController, string targetAction = null)
+    {
+        var sameController = string.Equals(currentController ?? string.Empty, targetController ?? string.Empty, System.StringComparison.OrdinalIgnoreCase);
+        var sameAction = string.IsNullOrWhiteSpace(targetAction) || string.Equals(currentAction ?? string.Empty, targetAction ?? string.Empty, System.StringComparison.OrdinalIgnoreCase);
+        return sameController && sameAction ? "is-active" : string.Empty;
+    }
 }
 
 <!DOCTYPE html>
@@ -8,79 +74,145 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewBag.Title</title>
+    <title>@ViewBag.Title - ForoU</title>
     @Scripts.Render("~/bundles/modernizr")
 
     <style>
-        html, body {
-            height: 100%;
+        :root {
+            --forou-bg: #070b17;
+            --forou-bg-soft: #0d1326;
+            --forou-panel: rgba(14, 20, 39, 0.92);
+            --forou-panel-strong: #11182f;
+            --forou-panel-light: rgba(255,255,255,0.04);
+            --forou-border: rgba(133, 145, 255, 0.16);
+            --forou-border-strong: rgba(133, 145, 255, 0.28);
+            --forou-text: #f6f8ff;
+            --forou-text-soft: #b5c0e0;
+            --forou-primary: #6f7cff;
+            --forou-primary-2: #8f59ff;
+            --forou-danger: #ff7f99;
+            --forou-shadow: 0 24px 60px rgba(0, 0, 0, 0.28);
         }
 
+        * { box-sizing: border-box; }
+        html, body { height: 100%; }
         body {
             margin: 0;
-            font-family: Arial, Helvetica, sans-serif;
-            background: #050816;
-            color: #f5f7ff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--forou-text);
+            background:
+                radial-gradient(circle at 0% 0%, rgba(111, 124, 255, 0.18), transparent 28%),
+                radial-gradient(circle at 100% 12%, rgba(143, 89, 255, 0.16), transparent 26%),
+                linear-gradient(180deg, #070b17 0%, #090e1c 100%);
         }
+
+        a { color: inherit; }
 
         .forou-shell {
             min-height: 100vh;
-            display: flex;
-            background: radial-gradient(circle at 10% 10%, rgba(77, 97, 255, 0.18), transparent 30%), radial-gradient(circle at 90% 20%, rgba(133, 72, 255, 0.12), transparent 28%), #050816;
+            display: grid;
+            grid-template-columns: 290px 1fr;
         }
 
         .forou-sidebar {
-            width: 250px;
-            background: linear-gradient(180deg, #101327 0%, #0b1020 100%);
-            border-right: 1px solid rgba(125, 136, 255, 0.18);
-            padding: 16px 14px;
-            box-sizing: border-box;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            padding: 24px 18px;
+            background: linear-gradient(180deg, rgba(8, 12, 25, 0.98) 0%, rgba(10, 14, 28, 0.96) 100%);
+            border-right: 1px solid var(--forou-border);
+            backdrop-filter: blur(16px);
         }
 
         .forou-brand-card {
             display: flex;
             align-items: center;
-            gap: 12px;
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(123, 137, 255, 0.18);
-            border-radius: 16px;
-            padding: 14px;
-            margin-bottom: 22px;
-            box-shadow: 0 0 20px rgba(79, 100, 255, 0.08);
+            gap: 14px;
+            padding: 16px;
+            border-radius: 22px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.03) 100%);
+            border: 1px solid var(--forou-border);
+            box-shadow: var(--forou-shadow);
+            margin-bottom: 24px;
         }
 
         .forou-brand-logo {
-            width: 40px;
-            height: 40px;
-            border-radius: 14px;
-            background: linear-gradient(135deg, #4f6bff, #7b48ff);
-            color: #fff;
+            width: 52px;
+            height: 52px;
+            border-radius: 18px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: 700;
-            box-shadow: 0 0 16px rgba(100, 113, 255, 0.35);
+            font-weight: 800;
+            letter-spacing: 0.02em;
+            color: #fff;
+            background: linear-gradient(135deg, var(--forou-primary) 0%, var(--forou-primary-2) 100%);
+            box-shadow: 0 16px 30px rgba(111, 124, 255, 0.34);
         }
 
         .forou-brand-title {
-            font-size: 20px;
-            font-weight: 700;
-            color: #fff;
+            font-size: 1.3rem;
+            font-weight: 800;
+            margin-bottom: 2px;
         }
 
         .forou-brand-sub {
-            font-size: 13px;
-            color: #b8c0e0;
-            margin-top: 2px;
+            font-size: 0.9rem;
+            color: var(--forou-text-soft);
+        }
+
+        .forou-user-card {
+            padding: 16px;
+            border-radius: 20px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--forou-border);
+            margin-bottom: 22px;
+        }
+
+        .forou-user-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .forou-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 16px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            color: #fff;
+            background: linear-gradient(135deg, rgba(111, 124, 255, 0.9) 0%, rgba(143, 89, 255, 0.9) 100%);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .forou-user-name {
+            font-size: 0.98rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .forou-user-role {
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 10px;
+            border-radius: 999px;
+            background: rgba(111, 124, 255, 0.14);
+            border: 1px solid rgba(111, 124, 255, 0.28);
+            color: #dfe5ff;
+            font-size: 0.77rem;
+            font-weight: 700;
         }
 
         .forou-menu-label {
-            color: #d7dcf4;
+            margin: 0 8px 12px;
+            color: var(--forou-text-soft);
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.14em;
             text-transform: uppercase;
-            font-size: 12px;
-            letter-spacing: 0.08em;
-            margin: 10px 8px 16px;
-            opacity: 0.85;
         }
 
         .forou-nav {
@@ -92,214 +224,177 @@
         .forou-nav-link {
             display: flex;
             align-items: center;
-            gap: 12px;
-            color: #e7ebff;
-            text-decoration: none;
+            gap: 14px;
             padding: 12px 14px;
-            border-radius: 14px;
+            border-radius: 16px;
+            text-decoration: none;
+            color: #e7ecff;
             border: 1px solid transparent;
-            transition: all 0.2s ease;
-            font-size: 16px;
+            transition: 0.2s ease;
         }
 
-            .forou-nav-link:hover {
-                color: #fff;
-                background: rgba(96, 104, 255, 0.14);
-                border-color: rgba(123, 137, 255, 0.22);
-                box-shadow: 0 0 14px rgba(91, 105, 255, 0.12);
-                text-decoration: none;
-            }
-
-        .forou-nav-icon {
-            width: 22px;
-            text-align: center;
+        .forou-nav-link:hover,
+        .forou-nav-link.is-active {
+            text-decoration: none;
+            color: #fff;
+            background: linear-gradient(90deg, rgba(111, 124, 255, 0.16) 0%, rgba(143, 89, 255, 0.12) 100%);
+            border-color: var(--forou-border-strong);
+            box-shadow: 0 14px 24px rgba(20, 28, 58, 0.28);
         }
 
-        .forou-logout-link {
-            margin-top: 10px;
+        .forou-nav-link.is-active .forou-nav-icon {
+            background: linear-gradient(135deg, var(--forou-primary) 0%, var(--forou-primary-2) 100%);
+            border-color: transparent;
+            color: #fff;
+        }
+
+        .forou-nav-text {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .forou-nav-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+        }
+
+        .forou-nav-subtitle {
+            font-size: 0.78rem;
+            color: var(--forou-text-soft);
+        }
+
+        .forou-nav-icon,
+        .forou-topbar-button {
+            width: 42px;
+            height: 42px;
+            border-radius: 14px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(255,255,255,0.08);
+            background: rgba(255,255,255,0.04);
+            color: #dfe5ff;
+            flex-shrink: 0;
+        }
+
+        .forou-nav-icon svg,
+        .forou-topbar-button svg,
+        .forou-topbar-profile svg {
+            width: 20px;
+            height: 20px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 1.8;
+            stroke-linecap: round;
+            stroke-linejoin: round;
         }
 
         .forou-main {
-            flex: 1;
+            min-width: 0;
             display: flex;
             flex-direction: column;
-            min-width: 0;
         }
 
         .forou-topbar {
-            height: 76px;
-            border-bottom: 1px solid rgba(123, 137, 255, 0.16);
-            background: linear-gradient(90deg, #0e1227 0%, #101226 35%, #161033 100%);
+            position: sticky;
+            top: 0;
+            z-index: 20;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0 28px;
-            box-sizing: border-box;
+            gap: 18px;
+            padding: 18px 28px;
+            background: rgba(7, 11, 23, 0.78);
+            border-bottom: 1px solid var(--forou-border);
+            backdrop-filter: blur(18px);
         }
 
-        .forou-topbar-left {
+        .forou-topbar-left,
+        .forou-topbar-right {
             display: flex;
             align-items: center;
             gap: 14px;
         }
 
-        .forou-menu-button {
+        .forou-topbar-title {
+            font-size: 1.18rem;
+            font-weight: 800;
+            margin-bottom: 4px;
+        }
+
+        .forou-topbar-subtitle {
+            color: var(--forou-text-soft);
+            font-size: 0.86rem;
+        }
+
+        .forou-topbar-profile {
             width: 42px;
             height: 42px;
             border-radius: 14px;
-            display: flex;
+            display: inline-flex;
             align-items: center;
             justify-content: center;
-            background: rgba(255,255,255,0.04);
-            border: 1px solid rgba(123, 137, 255, 0.24);
-            color: #fff;
-            font-size: 18px;
-        }
-
-        .forou-topbar-title {
-            color: #f5f7ff;
-            font-size: 17px;
-            font-weight: 700;
-        }
-
-        .forou-topbar-right {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .forou-topbar-icon {
-            width: 42px;
-            height: 42px;
-            border-radius: 999px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: rgba(255,255,255,0.04);
-            border: 1px solid rgba(123, 137, 255, 0.30);
-            color: #fff;
-            box-shadow: 0 0 14px rgba(88, 103, 255, 0.12);
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--forou-border);
+            color: #e9edff;
             text-decoration: none;
         }
 
-        .forou-topbar-link:hover {
-            color: #fff;
-            text-decoration: none;
-            background: rgba(255,255,255,0.08);
-        }
-
-        .forou-topbar-danger {
-            color: #ff6b8a;
+        .forou-topbar-button.danger {
+            color: #ffc0cf;
         }
 
         .forou-content {
             flex: 1;
             padding: 28px;
-            box-sizing: border-box;
         }
 
         .forou-content-inner {
-            max-width: 1500px;
+            max-width: 1480px;
             margin: 0 auto;
         }
 
         .forou-footer {
-            text-align: center;
-            color: #c2cae8;
-            padding: 18px 0 24px;
-            font-size: 14px;
+            padding: 0 28px 24px;
         }
 
-        .forou-hero {
-            border-radius: 22px;
-            overflow: hidden;
-            background: #171935;
-            border: 1px solid rgba(123, 137, 255, 0.18);
-            box-shadow: 0 25px 50px rgba(0,0,0,0.18);
+        .forou-footer-inner {
+            max-width: 1480px;
+            margin: 0 auto;
+            padding-top: 16px;
+            border-top: 1px solid rgba(255,255,255,0.06);
+            color: var(--forou-text-soft);
+            font-size: 0.9rem;
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
         }
 
-        .forou-hero-top {
-            padding: 36px 34px 84px;
-            background: linear-gradient(90deg, #6670ff 0%, #8d47ff 50%, #3b256b 100%);
-            position: relative;
-        }
-
-        .forou-hero-title {
-            font-size: 52px;
-            font-weight: 800;
-            color: #fff;
-            margin: 0 0 12px 0;
-        }
-
-        .forou-hero-text {
-            color: rgba(255,255,255,0.88);
-            font-size: 18px;
-            max-width: 920px;
-            line-height: 1.6;
-        }
-
-        .forou-hero-btn {
-            position: absolute;
-            right: 30px;
-            bottom: 34px;
-            background: #ffffff;
-            color: #11172b;
-            text-decoration: none;
-            padding: 14px 24px;
-            border-radius: 12px;
-            font-weight: 700;
-        }
-
-            .forou-hero-btn:hover {
-                color: #11172b;
-                text-decoration: none;
-                opacity: 0.95;
+        @@media (max-width: 1080px) {
+            .forou-shell {
+                grid-template-columns: 1fr;
             }
 
-        .forou-card-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 22px;
-            padding: 28px;
-            margin-top: -34px;
+            .forou-sidebar {
+                position: relative;
+                height: auto;
+            }
         }
 
-        .forou-feature-card {
-            background: #111328;
-            border: 1px solid rgba(123, 137, 255, 0.12);
-            border-radius: 14px;
-            padding: 20px;
-            color: #e8ebff;
+        @@media (max-width: 768px) {
+            .forou-topbar,
+            .forou-content,
+            .forou-footer {
+                padding-left: 18px;
+                padding-right: 18px;
+            }
+
+            .forou-topbar-subtitle {
+                display: none;
+            }
         }
-
-            .forou-feature-card h3 {
-                margin-top: 0;
-                margin-bottom: 12px;
-                font-size: 22px;
-                color: #ffffff;
-            }
-
-            .forou-feature-card p {
-                color: #c2cae8;
-                line-height: 1.6;
-                min-height: 90px;
-            }
-
-        .forou-feature-link {
-            display: inline-block;
-            margin-top: 10px;
-            border: 1px solid #6d79ff;
-            color: #cfd5ff;
-            text-decoration: none;
-            padding: 10px 14px;
-            border-radius: 10px;
-        }
-
-            .forou-feature-link:hover {
-                text-decoration: none;
-                color: #fff;
-                background: rgba(109,121,255,0.12);
-            }
     </style>
 </head>
 <body>
@@ -309,44 +404,79 @@
                 <div class="forou-brand-logo">FU</div>
                 <div>
                     <div class="forou-brand-title">ForoU</div>
-                    <div class="forou-brand-sub">Plataforma académica</div>
+                    <div class="forou-brand-sub">Entorno académico digital</div>
                 </div>
             </div>
 
-            <div class="forou-menu-label">Menú</div>
+            <div class="forou-user-card">
+                <div class="forou-user-row">
+                    <div class="forou-avatar">@GetInitials(userName)</div>
+                    <div>
+                        <div class="forou-user-name">@userName</div>
+                        <div class="forou-user-role">@userRole</div>
+                    </div>
+                </div>
+            </div>
 
+            <div class="forou-menu-label">Navegación</div>
             <nav class="forou-nav">
-                <a class="forou-nav-link" href="@Url.Action("Index", "Home")">
-                    <span class="forou-nav-icon">🏠</span>
-                    <span>Inicio</span>
+                <a class="forou-nav-link @NavState(currentController, currentAction, "Home", "Index")" href="@Url.Action("Index", "Home")">
+                    <span class="forou-nav-icon">@AppIcon("home")</span>
+                    <span class="forou-nav-text">
+                        <span class="forou-nav-title">Inicio</span>
+                        <span class="forou-nav-subtitle">Vista principal</span>
+                    </span>
                 </a>
 
-                <a class="forou-nav-link" href="@Url.Action("Index", "Category")">
-                    <span class="forou-nav-icon">📚</span>
-                    <span>Categorías</span>
+                <a class="forou-nav-link @NavState(currentController, currentAction, "Category")" href="@Url.Action("Index", "Category")">
+                    <span class="forou-nav-icon">@AppIcon("categories")</span>
+                    <span class="forou-nav-text">
+                        <span class="forou-nav-title">Categorías</span>
+                        <span class="forou-nav-subtitle">Áreas de consulta</span>
+                    </span>
                 </a>
 
-                <a class="forou-nav-link" href="@Url.Action("Index", "Category")">
-                    <span class="forou-nav-icon">💬</span>
-                    <span>Consultas</span>
+                <a class="forou-nav-link @NavState(currentController, currentAction, "Thread")" href="@Url.Action("Index", "Category")">
+                    <span class="forou-nav-icon">@AppIcon("threads")</span>
+                    <span class="forou-nav-text">
+                        <span class="forou-nav-title">Foros</span>
+                        <span class="forou-nav-subtitle">Conversaciones activas</span>
+                    </span>
                 </a>
 
-                <a class="forou-nav-link" href="@Url.Action("Index", "Profiled")">
-                    <span class="forou-nav-icon">👤</span>
-                    <span>Mi perfil</span>
+                <a class="forou-nav-link @NavState(currentController, currentAction, "Assignment")" href="@Url.Action("Index", "Assignment")">
+                    <span class="forou-nav-icon">@AppIcon("tasks")</span>
+                    <span class="forou-nav-text">
+                        <span class="forou-nav-title">Tareas</span>
+                        <span class="forou-nav-subtitle">Entregas y seguimiento</span>
+                    </span>
+                </a>
+
+                <a class="forou-nav-link @NavState(currentController, currentAction, "Profiled")" href="@Url.Action("Index", "Profiled")">
+                    <span class="forou-nav-icon">@AppIcon("profile")</span>
+                    <span class="forou-nav-text">
+                        <span class="forou-nav-title">Mi perfil</span>
+                        <span class="forou-nav-subtitle">Cuenta y datos</span>
+                    </span>
                 </a>
 
                 @if (userRole == "Administrador")
                 {
-                    <a class="forou-nav-link" href="@Url.Action("Users", "Admin")">
-                        <span class="forou-nav-icon">🛠</span>
-                        <span>Administración</span>
+                    <a class="forou-nav-link @NavState(currentController, currentAction, "Admin")" href="@Url.Action("Users", "Admin")">
+                        <span class="forou-nav-icon">@AppIcon("admin")</span>
+                        <span class="forou-nav-text">
+                            <span class="forou-nav-title">Administración</span>
+                            <span class="forou-nav-subtitle">Gestión del sistema</span>
+                        </span>
                     </a>
                 }
 
-                <a class="forou-nav-link forou-logout-link" href="@Url.Action("Logout", "Access")">
-                    <span class="forou-nav-icon">⛔</span>
-                    <span>Cerrar sesión</span>
+                <a class="forou-nav-link" href="@Url.Action("Logout", "Access")">
+                    <span class="forou-nav-icon">@AppIcon("logout")</span>
+                    <span class="forou-nav-text">
+                        <span class="forou-nav-title">Cerrar sesión</span>
+                        <span class="forou-nav-subtitle">Salir de ForoU</span>
+                    </span>
                 </a>
             </nav>
         </aside>
@@ -354,14 +484,20 @@
         <main class="forou-main">
             <header class="forou-topbar">
                 <div class="forou-topbar-left">
-                    <div class="forou-menu-button">☰</div>
-                    <div class="forou-topbar-title">@ViewBag.Title</div>
+                    <div class="forou-topbar-button">@AppIcon("menu")</div>
+                    <div>
+                        <div class="forou-topbar-title">@ViewBag.Title</div>
+                        <div class="forou-topbar-subtitle">@roleLabel</div>
+                    </div>
                 </div>
 
                 <div class="forou-topbar-right">
-                    <div class="forou-topbar-icon">⚙</div>
-                    <a class="forou-topbar-icon forou-topbar-link" href="@Url.Action("Index", "Profiled")" title="@userName">👤</a>
-                    <a class="forou-topbar-icon forou-topbar-link forou-topbar-danger" href="@Url.Action("Logout", "Access")">⛔</a>
+                    <a class="forou-topbar-profile" href="@Url.Action("Index", "Profiled")" title="Ver perfil">
+                        @AppIcon("profile")
+                    </a>
+                    <a class="forou-topbar-button danger" href="@Url.Action("Logout", "Access")" title="Cerrar sesión">
+                        @AppIcon("logout")
+                    </a>
                 </div>
             </header>
 
@@ -372,7 +508,10 @@
             </section>
 
             <footer class="forou-footer">
-                © 2026 ForoU
+                <div class="forou-footer-inner">
+                    <span>© 2026 ForoU</span>
+                    <span>@roleLabel</span>
+                </div>
             </footer>
         </main>
     </div>

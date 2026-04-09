@@ -1,28 +1,27 @@
-﻿using System.Net;
+using System.Net;
 using System.Web.Mvc;
 using AP.Business;
 using AP.Models;
-using APMVC.Models;
+using AP.MVC.Filters;
+using AP.MVC.Models;
 
-namespace APMVC.Controllers
+namespace AP.MVC.Controllers
 {
+    [SessionAuthorize]
     public class ThreadController : Controller
     {
         private readonly ThreadBusiness _biz = new ThreadBusiness();
 
-        // GET: Thread?categoryId=1
         public ActionResult Index(int? categoryId)
         {
             if (categoryId == null)
                 return RedirectToAction("Index", "Category");
 
             ViewBag.CategoryId = categoryId.Value;
-
             var data = _biz.GetThreadsByCategory(categoryId.Value);
             return View(data);
         }
 
-        // GET: Thread/Details/5
         public ActionResult Details(int? id)
         {
             if (id == null)
@@ -41,11 +40,12 @@ namespace APMVC.Controllers
             return View(vm);
         }
 
-        // GET: Thread/Create?categoryId=1
         public ActionResult Create(int? categoryId)
         {
             if (categoryId == null)
                 return RedirectToAction("Index", "Category");
+
+            ViewBag.CategoryId = categoryId.Value;
 
             var model = new Thread
             {
@@ -55,17 +55,19 @@ namespace APMVC.Controllers
             return View(model);
         }
 
-        // POST: Thread/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Create(Thread model)
         {
+            ViewBag.CategoryId = model.CategoryId;
+
+            if (model.CategoryId <= 0)
+                ModelState.AddModelError("CategoryId", "La categoría es obligatoria.");
+
             if (!ModelState.IsValid)
                 return View(model);
 
-            // Placeholder mientras no haya login:
-            if (model.UserId == 0) model.UserId = 1;
-
+            model.UserId = (int)Session["UserId"];
             _biz.CreateThread(model);
 
             return RedirectToAction("Index", new { categoryId = model.CategoryId });

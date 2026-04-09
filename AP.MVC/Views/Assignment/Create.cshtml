@@ -1,0 +1,64 @@
+@model AP.Models.Assignment
+
+@{
+    ViewBag.Title = "Registrar tarea";
+}
+
+<style>
+    .forou-form-wrap { max-width:980px; margin:0 auto; }
+    .forou-form-card { background:#111328; border:1px solid rgba(123,137,255,0.14); border-radius:20px; padding:28px; box-shadow:0 18px 40px rgba(0,0,0,0.18); }
+    .forou-form-title { font-size:34px; font-weight:800; color:#fff; margin-bottom:8px; }
+    .forou-form-subtitle { color:#c7d0f1; margin-bottom:24px; font-size:17px; }
+    .forou-group { margin-bottom:20px; }
+    .forou-label { display:block; color:#dbe2ff; font-weight:700; margin-bottom:8px; }
+    .forou-input, .forou-select, .forou-textarea { width:100%; border-radius:12px; border:1px solid rgba(123,137,255,0.22); background:#0c1022; color:#eef1ff; box-sizing:border-box; font-size:16px; }
+    .forou-input, .forou-select { height:50px; padding:0 14px; }
+    .forou-textarea { min-height:180px; padding:14px; resize:vertical; }
+    .forou-input:focus, .forou-select:focus, .forou-textarea:focus { outline:none; border-color:#6d79ff; box-shadow:0 0 0 3px rgba(109,121,255,0.12); }
+    .forou-btn-row { margin-top:26px; display:flex; gap:12px; flex-wrap:wrap; }
+    .forou-btn-primary { display:inline-block; background:linear-gradient(90deg,#5f6fff 0%,#7e49ff 100%); color:#fff; text-decoration:none; padding:12px 18px; border-radius:12px; font-weight:700; border:none; cursor:pointer; }
+    .forou-btn-secondary { display:inline-block; background:transparent; color:#dbe2ff; text-decoration:none; padding:12px 18px; border-radius:12px; font-weight:700; border:1px solid rgba(123,137,255,0.24); }
+    .field-validation-error, .validation-summary-errors { color:#ffb4c2; }
+</style>
+
+<div class="forou-form-wrap">
+    <div class="forou-form-card">
+        <div class="forou-form-title">Registrar tarea</div>
+        <div class="forou-form-subtitle">Creá una nueva tarea para una categoría.</div>
+
+        @using (Html.BeginForm("Create", "Assignment", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary(true, "", new { @class = "validation-summary-errors" })
+
+            <div class="forou-group">
+                <label class="forou-label">Categoría</label>
+                @Html.DropDownListFor(m => m.CategoryId, (SelectList)ViewBag.Categories, "Seleccioná una categoría", new { @class = "forou-select" })
+                @Html.ValidationMessageFor(m => m.CategoryId)
+            </div>
+
+            <div class="forou-group">
+                <label class="forou-label">Título</label>
+                @Html.TextBoxFor(m => m.Title, new { @class = "forou-input" })
+                @Html.ValidationMessageFor(m => m.Title)
+            </div>
+
+            <div class="forou-group">
+                <label class="forou-label">Descripción</label>
+                @Html.TextAreaFor(m => m.Description, new { @class = "forou-textarea" })
+                @Html.ValidationMessageFor(m => m.Description)
+            </div>
+
+            <div class="forou-group">
+                <label class="forou-label">Fecha de entrega</label>
+                @Html.TextBoxFor(m => m.DueDate, "{0:yyyy-MM-dd}", new { @class = "forou-input", type = "date" })
+                @Html.ValidationMessageFor(m => m.DueDate)
+            </div>
+
+            <div class="forou-btn-row">
+                <button type="submit" class="forou-btn-primary">Guardar tarea</button>
+                <a class="forou-btn-secondary" href="@Url.Action("Index", "Assignment")">Volver</a>
+            </div>
+        }
+    </div>
+</div>

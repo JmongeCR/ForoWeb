@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using AP.Models;
@@ -15,10 +15,12 @@ namespace AP.Data
 
             using (SqlConnection cn = _db.GetConnection())
             using (SqlCommand cmd = new SqlCommand(@"
-                SELECT ReplyId, ThreadId, UserId, Message, CreatedAt
-                FROM Replies
-                WHERE ThreadId = @threadId
-                ORDER BY CreatedAt ASC", cn))
+                SELECT r.ReplyId, r.ThreadId, r.UserId, r.Message, r.CreatedAt,
+                       u.FullName AS UserName
+                FROM Replies r
+                INNER JOIN Users u ON u.UserId = r.UserId
+                WHERE r.ThreadId = @threadId
+                ORDER BY r.CreatedAt ASC", cn))
             {
                 cmd.Parameters.AddWithValue("@threadId", threadId);
 
@@ -33,7 +35,8 @@ namespace AP.Data
                             ThreadId = Convert.ToInt32(dr["ThreadId"]),
                             UserId = Convert.ToInt32(dr["UserId"]),
                             Message = dr["Message"].ToString(),
-                            CreatedAt = Convert.ToDateTime(dr["CreatedAt"])
+                            CreatedAt = Convert.ToDateTime(dr["CreatedAt"]),
+                            UserName = dr["UserName"].ToString()
                         });
                     }
                 }
@@ -51,7 +54,7 @@ namespace AP.Data
             {
                 cmd.Parameters.AddWithValue("@ThreadId", model.ThreadId);
                 cmd.Parameters.AddWithValue("@UserId", model.UserId);
-                cmd.Parameters.AddWithValue("@Message", model.Message);
+                cmd.Parameters.AddWithValue("@Message", model.Message.Trim());
                 cmd.Parameters.AddWithValue("@CreatedAt", model.CreatedAt);
 
                 cn.Open();

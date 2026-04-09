@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using AP.Data;
 using AP.Models;
 
@@ -26,6 +26,11 @@ namespace AP.Business
         public User GetUserById(int id)
         {
             return _repo.GetUserById(id);
+        }
+
+        public bool EmailExists(string email, int excludeUserId = 0)
+        {
+            return _repo.EmailExists(email, excludeUserId);
         }
 
         public void UpdateUser(User model)

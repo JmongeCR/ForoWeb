@@ -1,163 +1,47 @@
-﻿@model IEnumerable<AP.Models.User>
+@using System.Linq
+@model IEnumerable<AP.Models.User>
 
 @{
     ViewBag.Title = "Administración de usuarios";
 }
 
 <style>
-    .forou-admin-wrap {
-        display: flex;
-        flex-direction: column;
-        gap: 22px;
-    }
-
-    .forou-admin-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 16px;
-        flex-wrap: wrap;
-    }
-
-    .forou-admin-title {
-        font-size: 34px;
-        font-weight: 800;
-        color: #ffffff;
-        margin: 0 0 6px 0;
-    }
-
-    .forou-admin-subtitle {
-        color: #c7d0f1;
-        font-size: 16px;
-        margin: 0;
-    }
-
-    .forou-btn-primary {
-        display: inline-block;
-        background: linear-gradient(90deg, #5f6fff 0%, #7e49ff 100%);
-        color: #fff;
-        text-decoration: none;
-        padding: 12px 18px;
-        border-radius: 12px;
-        font-weight: 700;
-        border: none;
-    }
-
-        .forou-btn-primary:hover {
-            color: #fff;
-            text-decoration: none;
-            opacity: 0.95;
-        }
-
-    .forou-table-card {
-        background: #111328;
-        border: 1px solid rgba(123, 137, 255, 0.14);
-        border-radius: 20px;
-        padding: 18px;
-        box-shadow: 0 18px 40px rgba(0,0,0,0.18);
-        overflow-x: auto;
-    }
-
-    .forou-table {
-        width: 100%;
-        border-collapse: collapse;
-        min-width: 820px;
-    }
-
-        .forou-table thead th {
-            text-align: left;
-            color: #ffffff;
-            font-size: 15px;
-            font-weight: 800;
-            padding: 16px 14px;
-            background: rgba(255,255,255,0.04);
-            border-bottom: 1px solid rgba(123, 137, 255, 0.14);
-        }
-
-        .forou-table tbody td {
-            padding: 16px 14px;
-            color: #e9edff;
-            border-bottom: 1px solid rgba(123, 137, 255, 0.10);
-            vertical-align: middle;
-        }
-
-        .forou-table tbody tr:hover td {
-            background: rgba(255,255,255,0.03);
-        }
-
-    .forou-pill {
-        display: inline-block;
-        padding: 6px 12px;
-        border-radius: 999px;
-        font-size: 13px;
-        font-weight: 700;
-    }
-
-    .forou-pill-role-admin {
-        background: rgba(126, 73, 255, 0.16);
-        color: #d8c7ff;
-        border: 1px solid rgba(126, 73, 255, 0.28);
-    }
-
-    .forou-pill-role-student {
-        background: rgba(95, 111, 255, 0.16);
-        color: #cfd7ff;
-        border: 1px solid rgba(95, 111, 255, 0.28);
-    }
-
-    .forou-pill-role-professor {
-        background: rgba(0, 195, 255, 0.14);
-        color: #bfefff;
-        border: 1px solid rgba(0, 195, 255, 0.25);
-    }
-
-    .forou-pill-active {
-        background: rgba(34, 197, 94, 0.14);
-        color: #bbf7d0;
-        border: 1px solid rgba(34, 197, 94, 0.24);
-    }
-
-    .forou-pill-inactive {
-        background: rgba(239, 68, 68, 0.14);
-        color: #fecaca;
-        border: 1px solid rgba(239, 68, 68, 0.24);
-    }
-
-    .forou-action-link {
-        display: inline-block;
-        color: #d8dcff;
-        text-decoration: none;
-        border: 1px solid rgba(123, 137, 255, 0.26);
-        padding: 8px 12px;
-        border-radius: 10px;
-        font-weight: 700;
-    }
-
-        .forou-action-link:hover {
-            color: #ffffff;
-            text-decoration: none;
-            background: rgba(255,255,255,0.05);
-        }
-
-    .forou-empty {
-        color: #c7d0f1;
-        padding: 18px 6px 6px;
-    }
+    .forou-admin-wrap { display:flex; flex-direction:column; gap:22px; }
+    .forou-admin-header { display:flex; justify-content:space-between; align-items:center; gap:16px; flex-wrap:wrap; }
+    .forou-title { font-size:34px; font-weight:800; color:#fff; margin:0; }
+    .forou-subtitle { color:#c7d0f1; font-size:17px; }
+    .forou-primary-btn { display:inline-block; background:linear-gradient(90deg,#5f6fff 0%,#7e49ff 100%); color:#fff; text-decoration:none; padding:12px 18px; border-radius:12px; font-weight:700; }
+    .forou-card { background:#111328; border:1px solid rgba(123,137,255,0.14); border-radius:20px; padding:24px; box-shadow:0 18px 40px rgba(0,0,0,0.18); }
+    .forou-table { width:100%; border-collapse:collapse; }
+    .forou-table th, .forou-table td { padding:14px 12px; border-bottom:1px solid rgba(123,137,255,0.12); text-align:left; color:#eaf0ff; }
+    .forou-table th { color:#aeb8dc; font-size:13px; text-transform:uppercase; letter-spacing:.06em; }
+    .forou-pill { display:inline-block; padding:6px 10px; border-radius:999px; font-size:13px; font-weight:700; }
+    .forou-pill-admin { background:rgba(255,193,7,.18); color:#ffd966; }
+    .forou-pill-professor { background:rgba(33,150,243,.18); color:#87c5ff; }
+    .forou-pill-student { background:rgba(120,200,120,.18); color:#b8f3b8; }
+    .forou-pill-active { background:rgba(120,200,120,.18); color:#b8f3b8; }
+    .forou-pill-inactive { background:rgba(255,107,138,.18); color:#ff9fb3; }
+    .forou-action-link { color:#dbe2ff; text-decoration:none; font-weight:700; }
+    .forou-action-link:hover { color:#fff; }
+    .forou-empty { color:#c7d0f1; }
+    .forou-success { background:rgba(120,200,120,.14); color:#b8f3b8; border:1px solid rgba(120,200,120,.24); border-radius:12px; padding:14px 16px; }
 </style>
 
 <div class="forou-admin-wrap">
     <div class="forou-admin-header">
         <div>
-            <h1 class="forou-admin-title">Administración de usuarios</h1>
-            <p class="forou-admin-subtitle">Listado de usuarios registrados en ForoU</p>
+            <h1 class="forou-title">Usuarios</h1>
+            <div class="forou-subtitle">Gestioná los usuarios y roles del sistema.</div>
         </div>
-
-        <a class="forou-btn-primary" href="@Url.Action("CreateUser", "Admin")">
-            Crear usuario
-        </a>
+        <a class="forou-primary-btn" href="@Url.Action("CreateUser", "Admin")">Crear usuario</a>
     </div>
 
-    <div class="forou-table-card">
+    @if (TempData["Success"] != null)
+    {
+        <div class="forou-success">@TempData["Success"]</div>
+    }
+
+    <div class="forou-card">
         @if (Model != null && Model.Any())
         {
             <table class="forou-table">
@@ -174,24 +58,15 @@
                 <tbody>
                     @foreach (var u in Model)
                     {
-                        var roleClass = "forou-pill-role-student";
-
-                        if (u.Role == "Administrador")
-                        {
-                            roleClass = "forou-pill-role-admin";
-                        }
-                        else if (u.Role == "Profesor")
-                        {
-                            roleClass = "forou-pill-role-professor";
-                        }
+                        var roleClass = "forou-pill-student";
+                        if (u.Role == "Administrador") { roleClass = "forou-pill-admin"; }
+                        else if (u.Role == "Profesor") { roleClass = "forou-pill-professor"; }
 
                         <tr>
                             <td>@u.UserId</td>
                             <td>@u.FullName</td>
                             <td>@u.Email</td>
-                            <td>
-                                <span class="forou-pill @roleClass">@u.Role</span>
-                            </td>
+                            <td><span class="forou-pill @roleClass">@u.Role</span></td>
                             <td>
                                 @if (u.IsActive)
                                 {
@@ -202,12 +77,7 @@
                                     <span class="forou-pill forou-pill-inactive">Inactivo</span>
                                 }
                             </td>
-                            <td>
-                                <a class="forou-action-link"
-                                   href="@Url.Action("EditUser", "Admin", new { id = u.UserId })">
-                                    Editar
-                                </a>
-                            </td>
+                            <td><a class="forou-action-link" href="@Url.Action("EditUser", "Admin", new { id = u.UserId })">Editar</a></td>
                         </tr>
                     }
                 </tbody>

@@ -75,34 +75,31 @@ CREATE TABLE [dbo].[Assignments](
 );
 GO
 
-ALTER TABLE [dbo].[Threads]  WITH CHECK ADD CONSTRAINT FK_Threads_Categories
+ALTER TABLE [dbo].[Threads] WITH CHECK ADD CONSTRAINT FK_Threads_Categories
 FOREIGN KEY([CategoryId]) REFERENCES [dbo].[Categories] ([CategoryId]);
 GO
 
-ALTER TABLE [dbo].[Threads]  WITH CHECK ADD CONSTRAINT FK_Threads_Users
+ALTER TABLE [dbo].[Threads] WITH CHECK ADD CONSTRAINT FK_Threads_Users
 FOREIGN KEY([UserId]) REFERENCES [dbo].[Users] ([UserId]);
 GO
 
-ALTER TABLE [dbo].[Replies]  WITH CHECK ADD CONSTRAINT FK_Replies_Threads
+ALTER TABLE [dbo].[Replies] WITH CHECK ADD CONSTRAINT FK_Replies_Threads
 FOREIGN KEY([ThreadId]) REFERENCES [dbo].[Threads] ([ThreadId]);
 GO
 
-ALTER TABLE [dbo].[Replies]  WITH CHECK ADD CONSTRAINT FK_Replies_Users
+ALTER TABLE [dbo].[Replies] WITH CHECK ADD CONSTRAINT FK_Replies_Users
 FOREIGN KEY([UserId]) REFERENCES [dbo].[Users] ([UserId]);
 GO
 
-ALTER TABLE [dbo].[Assignments]  WITH CHECK ADD CONSTRAINT FK_Assignments_Categories
+ALTER TABLE [dbo].[Assignments] WITH CHECK ADD CONSTRAINT FK_Assignments_Categories
 FOREIGN KEY([CategoryId]) REFERENCES [dbo].[Categories] ([CategoryId]);
 GO
 
-ALTER TABLE [dbo].[Assignments]  WITH CHECK ADD CONSTRAINT FK_Assignments_Users
+ALTER TABLE [dbo].[Assignments] WITH CHECK ADD CONSTRAINT FK_Assignments_Users
 FOREIGN KEY([TeacherId]) REFERENCES [dbo].[Users] ([UserId]);
 GO
-}
 
-
----DATOS DE PRUEBA--
-
+-- DATOS DE PRUEBA
 USE [ForoU]
 GO
 
@@ -144,6 +141,6 @@ SET IDENTITY_INSERT dbo.Assignments ON;
 INSERT INTO dbo.Assignments (AssignmentId, CategoryId, TeacherId, Title, Description, DueDate) VALUES
 (1, 1, 3, 'Modelo relacional', 'Diseñar el modelo relacional de la práctica.', '2026-03-15'),
 (2, 2, 3, 'Proyecto final de programación', 'Avance 1 del proyecto final.', '2026-03-20'),
-(3, 3, 3, 'Documento UML', 'Entregar diagrama de clases y casos de uso.', '2026-03-18');
+(3, 3, 1, 'Documento UML', 'Entregar diagrama de clases y casos de uso.', '2026-03-18');
 SET IDENTITY_INSERT dbo.Assignments OFF;
 GO

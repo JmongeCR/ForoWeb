@@ -1,0 +1,25 @@
+@model AP.Models.Assignment
+
+@{
+    ViewBag.Title = "Detalle de tarea";
+}
+
+<style>
+    .forou-card { background:#111328; border:1px solid rgba(123,137,255,0.14); border-radius:20px; padding:28px; box-shadow:0 18px 40px rgba(0,0,0,0.18); max-width:1000px; }
+    .forou-title { font-size:34px; font-weight:800; color:#fff; margin:0 0 14px 0; }
+    .forou-meta { color:#aeb8dc; font-size:15px; margin-bottom:8px; }
+    .forou-description { color:#d0d7f2; font-size:18px; line-height:1.7; margin:22px 0; white-space:pre-line; }
+    .forou-link { display:inline-block; color:#dbe2ff; text-decoration:none; font-weight:700; border:1px solid rgba(123,137,255,0.24); padding:10px 14px; border-radius:10px; }
+    .forou-link:hover { text-decoration:none; color:#fff; background:rgba(255,255,255,0.04); }
+</style>
+
+<div class="forou-card">
+    <h1 class="forou-title">@Model.Title</h1>
+    <div class="forou-meta">Categoría: @Model.CategoryName</div>
+    <div class="forou-meta">Publicada por: @Model.TeacherName</div>
+    <div class="forou-meta">Fecha de entrega: @Model.DueDate.ToString("dd/MM/yyyy")</div>
+
+    <div class="forou-description">@Model.Description</div>
+
+    <a class="forou-link" href="@Url.Action("Index", "Assignment")">Volver a tareas</a>
+</div>

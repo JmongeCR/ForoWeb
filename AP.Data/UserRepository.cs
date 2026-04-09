@@ -1,4 +1,4 @@
-﻿using AP.Models;
+using AP.Models;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
@@ -25,16 +25,7 @@ namespace AP.Data
                 {
                     while (dr.Read())
                     {
-                        list.Add(new User
-                        {
-                            UserId = Convert.ToInt32(dr["UserId"]),
-                            FullName = dr["FullName"].ToString(),
-                            Email = dr["Email"].ToString(),
-                            PasswordHash = dr["PasswordHash"].ToString(),
-                            Role = dr["Role"].ToString(),
-                            PhotoUrl = dr["PhotoUrl"] == DBNull.Value ? null : dr["PhotoUrl"].ToString(),
-                            IsActive = Convert.ToBoolean(dr["IsActive"])
-                        });
+                        list.Add(MapUser(dr));
                     }
                 }
             }
@@ -49,12 +40,12 @@ namespace AP.Data
                 INSERT INTO Users (FullName, Email, PasswordHash, Role, PhotoUrl, IsActive)
                 VALUES (@FullName, @Email, @PasswordHash, @Role, @PhotoUrl, @IsActive)", cn))
             {
-                cmd.Parameters.AddWithValue("@FullName", model.FullName);
-                cmd.Parameters.AddWithValue("@Email", model.Email);
+                cmd.Parameters.AddWithValue("@FullName", model.FullName.Trim());
+                cmd.Parameters.AddWithValue("@Email", model.Email.Trim());
                 cmd.Parameters.AddWithValue("@PasswordHash", model.PasswordHash);
                 cmd.Parameters.AddWithValue("@Role", model.Role);
                 cmd.Parameters.AddWithValue("@PhotoUrl",
-                    string.IsNullOrWhiteSpace(model.PhotoUrl) ? (object)DBNull.Value : model.PhotoUrl);
+                    string.IsNullOrWhiteSpace(model.PhotoUrl) ? (object)DBNull.Value : model.PhotoUrl.Trim());
                 cmd.Parameters.AddWithValue("@IsActive", model.IsActive);
 
                 cn.Open();
@@ -70,12 +61,12 @@ namespace AP.Data
             using (SqlCommand cmd = new SqlCommand(@"
                 SELECT UserId, FullName, Email, PasswordHash, Role, PhotoUrl, IsActive
                 FROM Users
-                WHERE Email = @Email
+                WHERE LOWER(LTRIM(RTRIM(Email))) = LOWER(LTRIM(RTRIM(@Email)))
                   AND PasswordHash = @PasswordHash
                   AND IsActive = 1", cn))
             {
-                cmd.Parameters.AddWithValue("@Email", email);
-                cmd.Parameters.AddWithValue("@PasswordHash", password);
+                cmd.Parameters.AddWithValue("@Email", email ?? string.Empty);
+                cmd.Parameters.AddWithValue("@PasswordHash", password ?? string.Empty);
 
                 cn.Open();
 
@@ -83,16 +74,7 @@ namespace AP.Data
                 {
                     if (dr.Read())
                     {
-                        user = new User
-                        {
-                            UserId = Convert.ToInt32(dr["UserId"]),
-                            FullName = dr["FullName"].ToString(),
-                            Email = dr["Email"].ToString(),
-                            PasswordHash = dr["PasswordHash"].ToString(),
-                            Role = dr["Role"].ToString(),
-                            PhotoUrl = dr["PhotoUrl"] == DBNull.Value ? null : dr["PhotoUrl"].ToString(),
-                            IsActive = Convert.ToBoolean(dr["IsActive"])
-                        };
+                        user = MapUser(dr);
                     }
                 }
             }
@@ -118,21 +100,28 @@ namespace AP.Data
                 {
                     if (dr.Read())
                     {
-                        user = new User
-                        {
-                            UserId = Convert.ToInt32(dr["UserId"]),
-                            FullName = dr["FullName"].ToString(),
-                            Email = dr["Email"].ToString(),
-                            PasswordHash = dr["PasswordHash"].ToString(),
-                            Role = dr["Role"].ToString(),
-                            PhotoUrl = dr["PhotoUrl"] == DBNull.Value ? null : dr["PhotoUrl"].ToString(),
-                            IsActive = Convert.ToBoolean(dr["IsActive"])
-                        };
+                        user = MapUser(dr);
                     }
                 }
             }
 
             return user;
+        }
+
+        public bool EmailExists(string email, int excludeUserId = 0)
+        {
+            using (SqlConnection cn = _db.GetConnection())
+            using (SqlCommand cmd = new SqlCommand(@"
+                SELECT COUNT(1)
+                FROM Users
+                WHERE LOWER(LTRIM(RTRIM(Email))) = LOWER(LTRIM(RTRIM(@Email)))
+                  AND UserId <> @UserId", cn))
+            {
+                cmd.Parameters.AddWithValue("@Email", email ?? string.Empty);
+                cmd.Parameters.AddWithValue("@UserId", excludeUserId);
+                cn.Open();
+                return Convert.ToInt32(cmd.ExecuteScalar()) > 0;
+            }
         }
 
         public void UpdateUser(User model)
@@ -149,17 +138,31 @@ namespace AP.Data
                 WHERE UserId = @UserId", cn))
             {
                 cmd.Parameters.AddWithValue("@UserId", model.UserId);
-                cmd.Parameters.AddWithValue("@FullName", model.FullName);
-                cmd.Parameters.AddWithValue("@Email", model.Email);
+                cmd.Parameters.AddWithValue("@FullName", model.FullName.Trim());
+                cmd.Parameters.AddWithValue("@Email", model.Email.Trim());
                 cmd.Parameters.AddWithValue("@PasswordHash", model.PasswordHash);
                 cmd.Parameters.AddWithValue("@Role", model.Role);
                 cmd.Parameters.AddWithValue("@PhotoUrl",
-                    string.IsNullOrWhiteSpace(model.PhotoUrl) ? (object)DBNull.Value : model.PhotoUrl);
+                    string.IsNullOrWhiteSpace(model.PhotoUrl) ? (object)DBNull.Value : model.PhotoUrl.Trim());
                 cmd.Parameters.AddWithValue("@IsActive", model.IsActive);
 
                 cn.Open();
                 cmd.ExecuteNonQuery();
             }
+        }
+
+        private User MapUser(SqlDataReader dr)
+        {
+            return new User
+            {
+                UserId = Convert.ToInt32(dr["UserId"]),
+                FullName = dr["FullName"].ToString(),
+                Email = dr["Email"].ToString(),
+                PasswordHash = dr["PasswordHash"].ToString(),
+                Role = dr["Role"].ToString(),
+                PhotoUrl = dr["PhotoUrl"] == DBNull.Value ? null : dr["PhotoUrl"].ToString(),
+                IsActive = Convert.ToBoolean(dr["IsActive"])
+            };
         }
     }
 }

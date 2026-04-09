@@ -1,9 +1,11 @@
-﻿using System.Web.Mvc;
+using System.Web.Mvc;
 using AP.Business;
 using AP.Models;
+using AP.MVC.Filters;
 
-namespace APMVC.Controllers
+namespace AP.MVC.Controllers
 {
+    [SessionAuthorize]
     public class ReplyController : Controller
     {
         private readonly ReplyBusiness _biz = new ReplyBusiness();
@@ -18,8 +20,8 @@ namespace APMVC.Controllers
             _biz.CreateReply(new Reply
             {
                 ThreadId = threadId,
-                UserId = 1,
-                Message = message
+                UserId = (int)Session["UserId"],
+                Message = message.Trim()
             });
 
             return RedirectToAction("Details", "Thread", new { id = threadId });

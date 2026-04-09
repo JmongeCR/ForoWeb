@@ -1,5 +1,5 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<?xml version='1.0' encoding='utf-8'?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="15.0" DefaultTargets="Build">
   <Import Project="..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props" Condition="Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -126,7 +126,7 @@
     <Compile Include="Models\ThreadDetailsVM.cs" />
     <Compile Include="obj\Debug\.NETFramework,Version=v4.8.1.AssemblyAttributes.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
+  <Compile Include="Filters\SessionAuthorizeAttribute.cs" /><Compile Include="Controllers\AssignmentController.cs" /></ItemGroup>
   <ItemGroup>
     <Content Include="bin\Antlr3.Runtime.dll" />
     <Content Include="bin\Antlr3.Runtime.pdb" />
@@ -263,7 +263,7 @@
     <Content Include="Views\Product\Product.cshtml" />
     <Content Include="Views\Access\Login.cshtml" />
     <Content Include="Views\Shared\LayoutAuth.cshtml" />
-  </ItemGroup>
+  <Content Include="Views\Assignment\Index.cshtml" /><Content Include="Views\Assignment\Create.cshtml" /><Content Include="Views\Assignment\Details.cshtml" /></ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
   </ItemGroup>

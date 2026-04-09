@@ -1,259 +1,487 @@
 ﻿@{
-    ViewBag.Title = "Inicio - ForoU";
+    var role = Session["UserRole"] != null ? Session["UserRole"].ToString() : "";
+    var userName = Session["UserName"] != null ? Session["UserName"].ToString() : "Usuario";
+
+    var isAdmin = role == "Administrador";
+    var isProfessor = role == "Profesor";
+    var dashboardTitle = isAdmin ? "Centro de gestión" : (isProfessor ? "Panel docente" : "Espacio académico");
+    var badge = isAdmin ? "Administrador" : (isProfessor ? "Profesor" : "Estudiante");
+    var heroText = isAdmin
+        ? "Supervisá usuarios, revisá la actividad general y mantené el entorno listo para el equipo académico."
+        : (isProfessor
+            ? "Organizá tus espacios, publicá tareas y mantené el seguimiento de las actividades desde un solo lugar."
+            : "Accedé rápidamente a tus foros, tareas y datos de cuenta desde un entorno ordenado y claro.");
+
+    ViewBag.Title = dashboardTitle;
 }
 
 <style>
-    .forou-home {
+    .forou-dashboard {
         display: flex;
         flex-direction: column;
         gap: 24px;
     }
 
-    .forou-banner {
-        background: linear-gradient(135deg, #6670ff 0%, #8a4fff 55%, #25164b 100%);
-        border: 1px solid rgba(123, 137, 255, 0.18);
-        border-radius: 24px;
-        padding: 34px;
-        box-shadow: 0 20px 45px rgba(0,0,0,0.18);
+    .forou-hero {
         position: relative;
         overflow: hidden;
+        border-radius: 28px;
+        padding: 34px;
+        background:
+            radial-gradient(circle at top right, rgba(255,255,255,0.12), transparent 28%),
+            linear-gradient(135deg, #283a8f 0%, #5a46c9 45%, #7e49ff 100%);
+        border: 1px solid rgba(145, 156, 255, 0.24);
+        box-shadow: 0 28px 60px rgba(8, 12, 30, 0.35);
     }
 
-        .forou-banner::after {
-            content: "";
-            position: absolute;
-            width: 260px;
-            height: 260px;
-            right: -70px;
-            top: -70px;
-            background: rgba(255,255,255,0.08);
-            border-radius: 50%;
-        }
-
-        .forou-banner::before {
-            content: "";
-            position: absolute;
-            width: 160px;
-            height: 160px;
-            right: 120px;
-            bottom: -80px;
-            background: rgba(255,255,255,0.06);
-            border-radius: 50%;
-        }
-
-    .forou-banner-content {
-        position: relative;
-        z-index: 1;
-        max-width: 850px;
+    .forou-hero::after {
+        content: "";
+        position: absolute;
+        inset: auto -70px -70px auto;
+        width: 220px;
+        height: 220px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.08);
+        filter: blur(8px);
     }
 
     .forou-badge {
-        display: inline-block;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
         padding: 8px 14px;
         border-radius: 999px;
         background: rgba(255,255,255,0.14);
+        border: 1px solid rgba(255,255,255,0.18);
         color: #fff;
-        font-size: 14px;
+        font-size: 0.84rem;
         font-weight: 700;
-        margin-bottom: 16px;
+        margin-bottom: 18px;
     }
 
-    .forou-banner h1 {
-        margin: 0 0 14px 0;
-        color: #fff;
-        font-size: 48px;
+    .forou-hero h1 {
+        margin: 0 0 12px 0;
+        font-size: 2.65rem;
         font-weight: 800;
-        line-height: 1.1;
-    }
-
-    .forou-banner p {
-        margin: 0;
-        color: rgba(255,255,255,0.92);
-        font-size: 20px;
-        line-height: 1.6;
+        color: #fff;
         max-width: 760px;
     }
 
-    .forou-banner-actions {
-        margin-top: 24px;
+    .forou-hero p {
+        margin: 0;
+        max-width: 760px;
+        color: rgba(255,255,255,0.9);
+        font-size: 1.05rem;
+        line-height: 1.75;
+    }
+
+    .forou-hero-actions {
         display: flex;
+        flex-wrap: wrap;
         gap: 12px;
+        margin-top: 24px;
+    }
+
+    .forou-btn-primary,
+    .forou-btn-secondary {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        padding: 12px 18px;
+        border-radius: 14px;
+        text-decoration: none;
+        font-weight: 700;
+        transition: 0.2s ease;
+    }
+
+    .forou-btn-primary {
+        background: #fff;
+        color: #141a31;
+    }
+
+    .forou-btn-primary:hover {
+        color: #141a31;
+        text-decoration: none;
+        transform: translateY(-1px);
+    }
+
+    .forou-btn-secondary {
+        color: #fff;
+        background: rgba(255,255,255,0.08);
+        border: 1px solid rgba(255,255,255,0.18);
+    }
+
+    .forou-btn-secondary:hover {
+        color: #fff;
+        text-decoration: none;
+        background: rgba(255,255,255,0.14);
+    }
+
+    .forou-stats {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 18px;
+    }
+
+    .forou-stat-card,
+    .forou-card,
+    .forou-panel {
+        background: rgba(17, 24, 47, 0.96);
+        border: 1px solid rgba(145, 156, 255, 0.14);
+        border-radius: 22px;
+        box-shadow: 0 18px 45px rgba(0,0,0,0.22);
+    }
+
+    .forou-stat-card {
+        padding: 22px;
+    }
+
+    .forou-stat-label {
+        color: #a9b6da;
+        font-size: 0.86rem;
+        margin-bottom: 8px;
+    }
+
+    .forou-stat-value {
+        color: #fff;
+        font-size: 1.7rem;
+        font-weight: 800;
+        margin-bottom: 6px;
+    }
+
+    .forou-stat-meta {
+        color: #cdd5f0;
+        font-size: 0.92rem;
+        line-height: 1.6;
+    }
+
+    .forou-section-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: end;
+        gap: 14px;
         flex-wrap: wrap;
     }
 
-    .forou-btn-main {
-        display: inline-block;
-        padding: 13px 20px;
-        border-radius: 12px;
-        text-decoration: none;
-        font-weight: 700;
-        background: #fff;
-        color: #151a2f;
-    }
-
-        .forou-btn-main:hover {
-            text-decoration: none;
-            color: #151a2f;
-            opacity: 0.95;
-        }
-
-    .forou-btn-alt {
-        display: inline-block;
-        padding: 13px 20px;
-        border-radius: 12px;
-        text-decoration: none;
-        font-weight: 700;
+    .forou-section-head h2 {
+        margin: 0;
+        font-size: 1.8rem;
+        font-weight: 800;
         color: #fff;
-        border: 1px solid rgba(255,255,255,0.28);
-        background: rgba(255,255,255,0.08);
     }
 
-        .forou-btn-alt:hover {
-            text-decoration: none;
-            color: #fff;
-            background: rgba(255,255,255,0.14);
-        }
+    .forou-section-head p {
+        margin: 6px 0 0 0;
+        color: #b8c3e0;
+        font-size: 0.98rem;
+    }
 
     .forou-grid {
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 20px;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 18px;
     }
 
     .forou-card {
-        background: #111328;
-        border: 1px solid rgba(123, 137, 255, 0.12);
-        border-radius: 18px;
         padding: 24px;
-        box-shadow: 0 18px 40px rgba(0,0,0,0.14);
     }
 
     .forou-card-icon {
         width: 52px;
         height: 52px;
-        border-radius: 14px;
-        display: flex;
+        border-radius: 16px;
+        display: inline-flex;
         align-items: center;
         justify-content: center;
-        background: rgba(109,121,255,0.12);
-        border: 1px solid rgba(109,121,255,0.22);
-        font-size: 24px;
+        background: linear-gradient(135deg, rgba(111,124,255,0.2) 0%, rgba(143,89,255,0.2) 100%);
+        border: 1px solid rgba(145, 156, 255, 0.18);
+        color: #eef1ff;
         margin-bottom: 18px;
     }
 
+    .forou-card-icon svg,
+    .forou-badge svg,
+    .forou-btn-primary svg,
+    .forou-btn-secondary svg {
+        width: 20px;
+        height: 20px;
+        stroke: currentColor;
+        fill: none;
+        stroke-width: 1.8;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+
     .forou-card h3 {
-        margin: 0 0 12px 0;
-        font-size: 25px;
+        margin: 0 0 10px 0;
+        font-size: 1.35rem;
         color: #fff;
         font-weight: 800;
     }
 
     .forou-card p {
         margin: 0 0 18px 0;
-        color: #c7d0f1;
-        font-size: 17px;
+        color: #c7d1ee;
         line-height: 1.7;
-        min-height: 96px;
+        min-height: 76px;
     }
 
     .forou-card a {
-        display: inline-block;
-        padding: 10px 14px;
-        border-radius: 10px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: #e4e9ff;
         text-decoration: none;
         font-weight: 700;
-        color: #dbe2ff;
-        border: 1px solid rgba(123, 137, 255, 0.26);
     }
 
-        .forou-card a:hover {
-            text-decoration: none;
-            color: #fff;
-            background: rgba(255,255,255,0.04);
-        }
+    .forou-card a:hover {
+        color: #fff;
+        text-decoration: none;
+    }
 
     .forou-panel {
-        background: #111328;
-        border: 1px solid rgba(123, 137, 255, 0.12);
-        border-radius: 20px;
-        padding: 28px;
-        box-shadow: 0 18px 40px rgba(0,0,0,0.14);
+        padding: 26px;
     }
 
-        .forou-panel h2 {
-            margin: 0 0 10px 0;
-            font-size: 30px;
-            font-weight: 800;
-            color: #fff;
-        }
-
-    .forou-panel-sub {
-        color: #c7d0f1;
-        font-size: 17px;
-        margin-bottom: 20px;
-    }
-
-    .forou-list {
+    .forou-panel-grid {
         display: grid;
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 16px;
+        margin-top: 18px;
     }
 
-    .forou-list-item {
-        background: rgba(255,255,255,0.03);
-        border: 1px solid rgba(123, 137, 255, 0.10);
-        border-radius: 14px;
+    .forou-panel-item {
         padding: 18px;
+        border-radius: 18px;
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(145, 156, 255, 0.1);
     }
 
-        .forou-list-item strong {
-            display: block;
-            color: #fff;
-            font-size: 18px;
-            margin-bottom: 8px;
-        }
+    .forou-panel-item strong {
+        display: block;
+        margin-bottom: 8px;
+        color: #fff;
+        font-size: 1rem;
+    }
 
-        .forou-list-item span {
-            color: #c7d0f1;
-            line-height: 1.6;
-            font-size: 16px;
-        }
+    .forou-panel-item span {
+        color: #c5d0ec;
+        line-height: 1.7;
+    }
 
     @@media (max-width: 1100px) {
-        .forou-grid {
+        .forou-stats,
+        .forou-grid,
+        .forou-panel-grid {
             grid-template-columns: 1fr;
         }
 
-        .forou-list {
-            grid-template-columns: 1fr;
-        }
-
-        .forou-banner h1 {
-            font-size: 38px;
-        }
-
-        .forou-banner p {
-            font-size: 18px;
+        .forou-hero h1 {
+            font-size: 2.2rem;
         }
     }
 </style>
-    <section class="forou-panel">
-        <h2>¿Qué podés hacer en ForoU?</h2>
-        <div class="forou-panel-sub">
-            Un espacio pensado para la comunicación universitaria de forma clara y ordenada.
+
+@helper DashboardIcon(string name)
+{
+    if (name == "home")
+    {
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"></path><path d="M5 9.5V21h14V9.5"></path><path d="M9.5 21v-6h5v6"></path></svg>
+    }
+    else if (name == "categories")
+    {
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="7" height="7" rx="2"></rect><rect x="14" y="4" width="7" height="7" rx="2"></rect><rect x="3" y="13" width="7" height="7" rx="2"></rect><rect x="14" y="13" width="7" height="7" rx="2"></rect></svg>
+    }
+    else if (name == "tasks")
+    {
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4h8"></path><path d="M9 3v3"></path><path d="M15 3v3"></path><rect x="4" y="5" width="16" height="16" rx="3"></rect><path d="M8 11h8"></path><path d="M8 15h5"></path></svg>
+    }
+    else if (name == "profile")
+    {
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M5 20a7 7 0 0 1 14 0"></path></svg>
+    }
+    else if (name == "admin")
+    {
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 7 4v5c0 4.5-2.8 7.5-7 9-4.2-1.5-7-4.5-7-9V7l7-4Z"></path><path d="m9.5 12 1.8 1.8L15 10"></path></svg>
+    }
+    else if (name == "forum")
+    {
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18h6l4 3v-3h2a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3H6A3 3 0 0 0 3 7v8a3 3 0 0 0 3 3Z"></path><path d="M8 9h8"></path><path d="M8 13h5"></path></svg>
+    }
+    else
+    {
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"></circle></svg>
+    }
+}
+
+<div class="forou-dashboard">
+    <section class="forou-hero">
+        <div class="forou-badge">@DashboardIcon(isAdmin ? "admin" : (isProfessor ? "tasks" : "home")) @badge</div>
+        <h1>Bienvenido, @userName</h1>
+        <p>@heroText</p>
+
+        <div class="forou-hero-actions">
+            @if (isAdmin)
+            {
+                <a class="forou-btn-primary" href="@Url.Action("Users", "Admin")">@DashboardIcon("admin") Administrar usuarios</a>
+                <a class="forou-btn-secondary" href="@Url.Action("Index", "Assignment")">@DashboardIcon("tasks") Revisar tareas</a>
+            }
+            else if (isProfessor)
+            {
+                <a class="forou-btn-primary" href="@Url.Action("Create", "Assignment")">@DashboardIcon("tasks") Publicar tarea</a>
+                <a class="forou-btn-secondary" href="@Url.Action("Index", "Category")">@DashboardIcon("categories") Ir a categorías</a>
+            }
+            else
+            {
+                <a class="forou-btn-primary" href="@Url.Action("Index", "Category")">@DashboardIcon("categories") Explorar categorías</a>
+                <a class="forou-btn-secondary" href="@Url.Action("Index", "Assignment")">@DashboardIcon("tasks") Ver tareas</a>
+            }
         </div>
+    </section>
 
-        <div class="forou-list">
-            <div class="forou-list-item">
-                <strong>Crear publicaciones</strong>
-                <span>Planteá dudas, abrí discusiones académicas y compartí consultas con otras personas.</span>
-            </div>
+    <section class="forou-stats">
+        <article class="forou-stat-card">
+            <div class="forou-stat-label">Rol activo</div>
+            <div class="forou-stat-value">@badge</div>
+            <div class="forou-stat-meta">Tu acceso se adapta a las opciones disponibles para tu perfil.</div>
+        </article>
+        <article class="forou-stat-card">
+            <div class="forou-stat-label">Acceso principal</div>
+            <div class="forou-stat-value">@(isAdmin ? "Gestión" : (isProfessor ? "Docencia" : "Participación"))</div>
+            <div class="forou-stat-meta">Un panel ordenado para entrar rápidamente a las áreas que más usás.</div>
+        </article>
+        <article class="forou-stat-card">
+            <div class="forou-stat-label">Cuenta</div>
+            <div class="forou-stat-value">ForoU</div>
+            <div class="forou-stat-meta">Tu información y navegación principal están centralizadas desde este panel.</div>
+        </article>
+    </section>
 
-            <div class="forou-list-item">
-                <strong>Responder hilos</strong>
-                <span>Colaborá en conversaciones activas y aportá respuestas dentro de cada categoría.</span>
+    <section>
+        <div class="forou-section-head">
+            <div>
+                <h2>Accesos rápidos</h2>
+                <p>Entradas directas a las secciones principales de tu flujo de trabajo.</p>
             </div>
         </div>
     </section>
 
+    <section class="forou-grid">
+        @if (isAdmin)
+        {
+            <article class="forou-card">
+                <div class="forou-card-icon">@DashboardIcon("admin")</div>
+                <h3>Administración</h3>
+                <p>Gestioná usuarios, roles y estados para mantener la plataforma organizada.</p>
+                <a href="@Url.Action("Users", "Admin")">Abrir administración</a>
+            </article>
+
+            <article class="forou-card">
+                <div class="forou-card-icon">@DashboardIcon("tasks")</div>
+                <h3>Tareas</h3>
+                <p>Consultá entregas registradas y publicá nuevas actividades cuando sea necesario.</p>
+                <a href="@Url.Action("Index", "Assignment")">Ir a tareas</a>
+            </article>
+
+            <article class="forou-card">
+                <div class="forou-card-icon">@DashboardIcon("categories")</div>
+                <h3>Categorías</h3>
+                <p>Entrá a las áreas académicas para revisar el movimiento del foro y sus conversaciones.</p>
+                <a href="@Url.Action("Index", "Category")">Ver categorías</a>
+            </article>
+        }
+        else if (isProfessor)
+        {
+            <article class="forou-card">
+                <div class="forou-card-icon">@DashboardIcon("tasks")</div>
+                <h3>Nueva tarea</h3>
+                <p>Publicá actividades académicas con fecha de entrega y categoría correspondiente.</p>
+                <a href="@Url.Action("Create", "Assignment")">Registrar tarea</a>
+            </article>
+
+            <article class="forou-card">
+                <div class="forou-card-icon">@DashboardIcon("forum")</div>
+                <h3>Foros</h3>
+                <p>Ingresá a las categorías para revisar publicaciones, responder y orientar las consultas.</p>
+                <a href="@Url.Action("Index", "Category")">Ir a foros</a>
+            </article>
+
+            <article class="forou-card">
+                <div class="forou-card-icon">@DashboardIcon("profile")</div>
+                <h3>Perfil</h3>
+                <p>Consultá tu información de cuenta y verificá el rol con el que trabajás en la plataforma.</p>
+                <a href="@Url.Action("Index", "Profiled")">Ver perfil</a>
+            </article>
+        }
+        else
+        {
+            <article class="forou-card">
+                <div class="forou-card-icon">@DashboardIcon("categories")</div>
+                <h3>Categorías</h3>
+                <p>Explorá los espacios disponibles y entrá al área que corresponda a tu consulta.</p>
+                <a href="@Url.Action("Index", "Category")">Abrir categorías</a>
+            </article>
+
+            <article class="forou-card">
+                <div class="forou-card-icon">@DashboardIcon("tasks")</div>
+                <h3>Tareas</h3>
+                <p>Revisá actividades publicadas, fechas de entrega y detalles importantes del curso.</p>
+                <a href="@Url.Action("Index", "Assignment")">Ver tareas</a>
+            </article>
+
+            <article class="forou-card">
+                <div class="forou-card-icon">@DashboardIcon("profile")</div>
+                <h3>Perfil</h3>
+                <p>Accedé a tus datos de cuenta y confirmá la información asociada a tu usuario.</p>
+                <a href="@Url.Action("Index", "Profiled")">Ir al perfil</a>
+            </article>
+        }
+    </section>
+
+    <section class="forou-panel">
+        <div class="forou-section-head">
+            <div>
+                <h2>@(isAdmin ? "Vista general del entorno" : (isProfessor ? "Herramientas disponibles" : "Tu espacio dentro de ForoU"))</h2>
+                <p>@(isAdmin ? "Puntos clave para mantener el entorno académico bajo control." : (isProfessor ? "Secciones clave para administrar tu dinámica académica." : "Áreas principales para consultar y participar con rapidez."))</p>
+            </div>
+        </div>
+
+        <div class="forou-panel-grid">
+            @if (isAdmin)
+            {
+                <div class="forou-panel-item">
+                    <strong>Control de usuarios</strong>
+                    <span>Accedé rápidamente a la gestión de cuentas para altas, cambios de rol y revisión de estado.</span>
+                </div>
+                <div class="forou-panel-item">
+                    <strong>Seguimiento académico</strong>
+                    <span>Revisá categorías y tareas para mantener una visión clara del movimiento general del sistema.</span>
+                </div>
+            }
+            else if (isProfessor)
+            {
+                <div class="forou-panel-item">
+                    <strong>Publicación de tareas</strong>
+                    <span>Creá nuevas actividades con la categoría correspondiente y una fecha de entrega definida.</span>
+                </div>
+                <div class="forou-panel-item">
+                    <strong>Participación en foros</strong>
+                    <span>Consultá las áreas del foro para orientar, responder y acompañar las conversaciones académicas.</span>
+                </div>
+            }
+            else
+            {
+                <div class="forou-panel-item">
+                    <strong>Exploración por categorías</strong>
+                    <span>Ingresá a cada espacio para encontrar las conversaciones relacionadas con tus cursos o temas.</span>
+                </div>
+                <div class="forou-panel-item">
+                    <strong>Consulta de tareas</strong>
+                    <span>Mantené a mano las actividades disponibles y revisá la información relevante antes de cada entrega.</span>
+                </div>
+            }
+        </div>
+    </section>
 </div>
