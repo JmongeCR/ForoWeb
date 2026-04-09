@@ -1,47 +1,248 @@
-@using System.Linq
 @model IEnumerable<AP.Models.User>
 
 @{
-    ViewBag.Title = "Administración de usuarios";
+    ViewBag.Title = "Administraci\u00f3n de usuarios";
 }
 
 <style>
-    .forou-admin-wrap { display:flex; flex-direction:column; gap:22px; }
-    .forou-admin-header { display:flex; justify-content:space-between; align-items:center; gap:16px; flex-wrap:wrap; }
-    .forou-title { font-size:34px; font-weight:800; color:#fff; margin:0; }
-    .forou-subtitle { color:#c7d0f1; font-size:17px; }
-    .forou-primary-btn { display:inline-block; background:linear-gradient(90deg,#5f6fff 0%,#7e49ff 100%); color:#fff; text-decoration:none; padding:12px 18px; border-radius:12px; font-weight:700; }
-    .forou-card { background:#111328; border:1px solid rgba(123,137,255,0.14); border-radius:20px; padding:24px; box-shadow:0 18px 40px rgba(0,0,0,0.18); }
-    .forou-table { width:100%; border-collapse:collapse; }
-    .forou-table th, .forou-table td { padding:14px 12px; border-bottom:1px solid rgba(123,137,255,0.12); text-align:left; color:#eaf0ff; }
-    .forou-table th { color:#aeb8dc; font-size:13px; text-transform:uppercase; letter-spacing:.06em; }
-    .forou-pill { display:inline-block; padding:6px 10px; border-radius:999px; font-size:13px; font-weight:700; }
-    .forou-pill-admin { background:rgba(255,193,7,.18); color:#ffd966; }
-    .forou-pill-professor { background:rgba(33,150,243,.18); color:#87c5ff; }
-    .forou-pill-student { background:rgba(120,200,120,.18); color:#b8f3b8; }
-    .forou-pill-active { background:rgba(120,200,120,.18); color:#b8f3b8; }
-    .forou-pill-inactive { background:rgba(255,107,138,.18); color:#ff9fb3; }
-    .forou-action-link { color:#dbe2ff; text-decoration:none; font-weight:700; }
-    .forou-action-link:hover { color:#fff; }
-    .forou-empty { color:#c7d0f1; }
-    .forou-success { background:rgba(120,200,120,.14); color:#b8f3b8; border:1px solid rgba(120,200,120,.24); border-radius:12px; padding:14px 16px; }
+    .forou-admin-wrap {
+        display: flex;
+        flex-direction: column;
+        gap: 22px;
+    }
+
+    .forou-admin-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        flex-wrap: wrap;
+    }
+
+    .forou-admin-title {
+        font-size: 26px;
+        font-weight: 800;
+        color: #1a3570;
+        margin: 0 0 6px 0;
+    }
+
+    .forou-admin-subtitle {
+        color: #64748b;
+        font-size: 15px;
+        margin: 0;
+    }
+
+    .forou-btn-primary {
+        display: inline-block;
+        background: linear-gradient(90deg, #1a3570 0%, #1e4db7 100%);
+        color: #fff;
+        text-decoration: none;
+        padding: 10px 20px;
+        border-radius: 10px;
+        font-weight: 700;
+        border: none;
+        font-size: 14px;
+        box-shadow: 0 4px 12px rgba(30,77,183,0.22);
+    }
+
+        .forou-btn-primary:hover {
+            color: #fff;
+            text-decoration: none;
+            opacity: 0.92;
+        }
+
+    .forou-table-card {
+        background: #fff;
+        border: 1px solid #e2e8f4;
+        border-radius: 16px;
+        overflow-x: auto;
+        box-shadow: 0 2px 8px rgba(26,53,112,0.06);
+    }
+
+    .forou-table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 820px;
+    }
+
+        .forou-table thead th {
+            text-align: left;
+            color: #1a3570;
+            font-size: 13px;
+            font-weight: 800;
+            padding: 14px 18px;
+            background: #f7f9fd;
+            border-bottom: 1px solid #e2e8f4;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+
+        .forou-table tbody td {
+            padding: 14px 18px;
+            color: #4a5e7a;
+            border-bottom: 1px solid #f0f4fa;
+            vertical-align: middle;
+            font-size: 14px;
+        }
+
+        .forou-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .forou-table tbody tr:hover td {
+            background: #f7f9fd;
+        }
+
+    .forou-pill {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    .forou-pill-role-admin {
+        background: #ede9fe;
+        color: #5b21b6;
+        border: 1px solid #c4b5fd;
+    }
+
+    .forou-pill-role-student {
+        background: #dbeafe;
+        color: #1e40af;
+        border: 1px solid #bfdbfe;
+    }
+
+    .forou-pill-role-professor {
+        background: #e0f2fe;
+        color: #0369a1;
+        border: 1px solid #bae6fd;
+    }
+
+    .forou-pill-active {
+        background: #dcfce7;
+        color: #166534;
+        border: 1px solid #bbf7d0;
+    }
+
+    .forou-pill-inactive {
+        background: #fee2e2;
+        color: #991b1b;
+        border: 1px solid #fecaca;
+    }
+
+    .forou-action-link {
+        display: inline-block;
+        color: #1e4db7;
+        text-decoration: none;
+        border: 1px solid #bfdbfe;
+        padding: 6px 12px;
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: 13px;
+        background: #f0f6ff;
+    }
+
+        .forou-action-link:hover {
+            color: #1e3a8a;
+            text-decoration: none;
+            background: #dbeafe;
+        }
+
+    .forou-empty {
+        color: #6b7f9e;
+        padding: 30px 18px;
+        font-size: 14px;
+    }
+
+    .forou-search-row {
+        display: flex; align-items: flex-end; justify-content: space-between;
+        gap: 16px; flex-wrap: wrap; margin-bottom: 20px;
+    }
+
+    .forou-search-form {
+        display: flex; align-items: flex-end; gap: 10px; flex-wrap: wrap;
+    }
+
+    .forou-search-group { display: flex; flex-direction: column; gap: 5px; }
+
+    .forou-search-label {
+        font-size: 12px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.04em;
+    }
+
+    .forou-search-input {
+        height: 40px; border-radius: 9px;
+        border: 1.5px solid #e2e8f0; background: #f8fafc;
+        padding: 0 14px; font-size: 14px;
+        font-family: inherit; color: #1e293b; min-width: 220px;
+        transition: border-color 0.2s;
+    }
+    .forou-search-input:focus { outline: none; border-color: #6366f1; background: #fff; }
+
+    .forou-search-select {
+        height: 40px; border-radius: 9px;
+        border: 1.5px solid #e2e8f0; background: #f8fafc;
+        padding: 0 14px; font-size: 14px;
+        font-family: inherit; color: #1e293b;
+        transition: border-color 0.2s;
+    }
+    .forou-search-select:focus { outline: none; border-color: #6366f1; background: #fff; }
+
+    .forou-search-btn {
+        height: 40px; padding: 0 18px; border-radius: 9px;
+        background: #6366f1; color: #fff; border: none;
+        font-weight: 700; font-size: 14px; font-family: inherit; cursor: pointer;
+        transition: opacity 0.15s;
+    }
+    .forou-search-btn:hover { opacity: 0.9; }
+
+    .forou-clear-link {
+        height: 40px; padding: 0 16px; border-radius: 9px;
+        border: 1.5px solid #e2e8f0; background: #f8fafc;
+        color: #64748b; font-size: 14px; font-weight: 600;
+        display: inline-flex; align-items: center; text-decoration: none;
+        transition: all 0.15s;
+    }
+    .forou-clear-link:hover { border-color: #c4b5fd; color: #6366f1; text-decoration: none; background: #f5f3ff; }
+
+    .forou-no-results {
+        padding: 28px 18px; text-align: center; color: #94a3b8; font-size: 14px;
+    }
 </style>
+
+@{
+    var currentCriteria = ViewBag.CurrentCriteria as string ?? "";
+    var currentField    = ViewBag.CurrentField    as string ?? "Todos";
+    var fieldOptions    = ViewBag.FieldOptions    as List<SelectListItem>;
+}
 
 <div class="forou-admin-wrap">
     <div class="forou-admin-header">
         <div>
-            <h1 class="forou-title">Usuarios</h1>
-            <div class="forou-subtitle">Gestioná los usuarios y roles del sistema.</div>
+            <h1 class="forou-admin-title">Administraci&oacute;n de usuarios</h1>
+            <p class="forou-admin-subtitle">Listado de usuarios registrados en ForoU</p>
         </div>
-        <a class="forou-primary-btn" href="@Url.Action("CreateUser", "Admin")">Crear usuario</a>
+        <a class="forou-btn-primary" href="@Url.Action("CreateUser", "Admin")">+ Crear usuario</a>
     </div>
 
-    @if (TempData["Success"] != null)
-    {
-        <div class="forou-success">@TempData["Success"]</div>
-    }
+    <div class="forou-search-row">
+        @using (Html.BeginForm("SearchUsers", "Admin", FormMethod.Post, new { @class = "forou-search-form" }))
+        {
+            @Html.AntiForgeryToken()
+            <div class="forou-search-group">
+                <label class="forou-search-label">Buscar</label>
+                @Html.TextBox("criteria", currentCriteria, new { @class = "forou-search-input", placeholder = "Texto a buscar..." })
+            </div>
+            <div class="forou-search-group">
+                <label class="forou-search-label">Campo</label>
+                @Html.DropDownList("field", new SelectList(fieldOptions, "Value", "Text", currentField), new { @class = "forou-search-select" })
+            </div>
+            <button type="submit" class="forou-search-btn">Buscar</button>
+            @Html.ActionLink("Limpiar", "Users", "Admin", null, new { @class = "forou-clear-link" })
+        }
+    </div>
 
-    <div class="forou-card">
+    <div class="forou-table-card">
         @if (Model != null && Model.Any())
         {
             <table class="forou-table">
@@ -56,17 +257,28 @@
                     </tr>
                 </thead>
                 <tbody>
+                    @{ int rowNum = 1; }
                     @foreach (var u in Model)
                     {
-                        var roleClass = "forou-pill-student";
-                        if (u.Role == "Administrador") { roleClass = "forou-pill-admin"; }
-                        else if (u.Role == "Profesor") { roleClass = "forou-pill-professor"; }
+                        var roleClass = "forou-pill-role-student";
+
+                        if (u.Role == "Administrador")
+                        {
+                            roleClass = "forou-pill-role-admin";
+                        }
+                        else if (u.Role == "Profesor")
+                        {
+                            roleClass = "forou-pill-role-professor";
+                        }
 
                         <tr>
-                            <td>@u.UserId</td>
-                            <td>@u.FullName</td>
+                            <td style="color:#1e293b; font-weight:700;">@rowNum</td>
+                            @{ rowNum++; }
+                            <td style="color:#1e293b; font-weight:700;">@u.FullName</td>
                             <td>@u.Email</td>
-                            <td><span class="forou-pill @roleClass">@u.Role</span></td>
+                            <td>
+                                <span class="forou-pill @roleClass">@u.Role</span>
+                            </td>
                             <td>
                                 @if (u.IsActive)
                                 {
@@ -77,7 +289,12 @@
                                     <span class="forou-pill forou-pill-inactive">Inactivo</span>
                                 }
                             </td>
-                            <td><a class="forou-action-link" href="@Url.Action("EditUser", "Admin", new { id = u.UserId })">Editar</a></td>
+                            <td>
+                                <a class="forou-action-link"
+                                   href="@Url.Action("EditUser", "Admin", new { id = u.UserId })">
+                                    Editar
+                                </a>
+                            </td>
                         </tr>
                     }
                 </tbody>
@@ -85,7 +302,7 @@
         }
         else
         {
-            <div class="forou-empty">No hay usuarios registrados.</div>
+            <div class="forou-no-results">No se encontraron usuarios para la b&uacute;squeda realizada.</div>
         }
     </div>
 </div>

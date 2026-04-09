@@ -5,28 +5,66 @@
 }
 
 <style>
-    .forou-form-wrap { max-width:900px; margin:0 auto; }
-    .forou-form-card { background:#111328; border:1px solid rgba(123,137,255,0.14); border-radius:20px; padding:28px; box-shadow:0 18px 40px rgba(0,0,0,0.18); }
-    .forou-form-title { font-size:32px; font-weight:800; color:#fff; margin-bottom:8px; }
-    .forou-form-subtitle { color:#c7d0f1; margin-bottom:24px; font-size:16px; }
-    .forou-grid { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
-    .forou-group { display:flex; flex-direction:column; }
-    .forou-label { color:#dbe2ff; font-weight:700; margin-bottom:8px; }
-    .forou-input, .forou-select { width:100%; height:48px; border-radius:12px; border:1px solid rgba(123,137,255,0.22); background:#0c1022; color:#eef1ff; padding:0 14px; box-sizing:border-box; font-size:15px; }
-    .forou-input:focus, .forou-select:focus { outline:none; border-color:#6d79ff; box-shadow:0 0 0 3px rgba(109,121,255,0.12); }
-    .forou-check-row { margin-top:16px; display:flex; align-items:center; gap:10px; color:#dbe2ff; }
-    .forou-btn-row { margin-top:26px; display:flex; gap:12px; flex-wrap:wrap; }
-    .forou-btn-primary { display:inline-block; background:linear-gradient(90deg,#5f6fff 0%,#7e49ff 100%); color:#fff; text-decoration:none; padding:12px 18px; border-radius:12px; font-weight:700; border:none; cursor:pointer; }
-    .forou-btn-secondary { display:inline-block; background:transparent; color:#dbe2ff; text-decoration:none; padding:12px 18px; border-radius:12px; font-weight:700; border:1px solid rgba(123,137,255,0.24); }
-    .field-validation-error, .validation-summary-errors { color:#ffb4c2; }
-    @@media (max-width:900px) { .forou-grid { grid-template-columns:1fr; } }
+    .forou-form-wrap { max-width: 900px; margin: 0 auto; }
+
+    .forou-form-card {
+        background: #fff; border: 1px solid #e2e8f0;
+        border-radius: 16px; padding: 32px;
+        box-shadow: 0 2px 8px rgba(99,102,241,0.06);
+    }
+
+    .forou-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+    .forou-group { display: flex; flex-direction: column; }
+
+    .forou-label { color: #2d3f60; font-weight: 700; margin-bottom: 8px; font-size: 14px; }
+
+    .forou-input,
+    .forou-select {
+        width: 100%; height: 46px; border-radius: 10px;
+        border: 1.5px solid #d0d9ee; background: #f7f9fd;
+        color: #1e2d4a; padding: 0 14px;
+        box-sizing: border-box; font-size: 14px; font-family: inherit;
+    }
+
+    .forou-input:focus,
+    .forou-select:focus {
+        outline: none; border-color: #1e4db7; background: #fff;
+        box-shadow: 0 0 0 3px rgba(30,77,183,0.1);
+    }
+
+    .forou-check-row {
+        margin-top: 8px; display: flex; align-items: center;
+        gap: 10px; color: #475569; font-size: 14px;
+    }
+
+    .forou-btn-row { margin-top: 26px; display: flex; gap: 12px; flex-wrap: wrap; }
+
+    .forou-btn-primary {
+        display: inline-block; background: #6366f1; color: #fff;
+        padding: 11px 22px; border-radius: 10px; font-weight: 700;
+        border: none; cursor: pointer; font-size: 14px; font-family: inherit;
+    }
+    .forou-btn-primary:hover { opacity: 0.92; color: #fff; }
+
+    .forou-btn-secondary {
+        display: inline-block; background: #f5f3ff; color: #6366f1;
+        text-decoration: none; padding: 11px 22px; border-radius: 10px;
+        font-weight: 700; border: 1.5px solid #ddd6fe; font-size: 14px;
+    }
+    .forou-btn-secondary:hover { background: #ede9fe; color: #6366f1; text-decoration: none; }
+
+    .field-validation-error,
+    .validation-summary-errors { color: #991b1b; font-size: 13px; margin-top: 4px; }
+
+    @@media (max-width: 900px) { .forou-grid { grid-template-columns: 1fr; } }
 </style>
 
 <div class="forou-form-wrap">
-    <div class="forou-form-card">
-        <div class="forou-form-title">Crear usuario</div>
-        <div class="forou-form-subtitle">Registrá un nuevo usuario en ForoU</div>
+    <div class="forou-page-title">Crear usuario</div>
+    <div class="forou-page-subtitle">Registr&aacute; un nuevo usuario en ForoU</div>
 
+    <div class="forou-form-card">
         @using (Html.BeginForm("CreateUser", "Admin", FormMethod.Post))
         {
             @Html.AntiForgeryToken()
@@ -41,19 +79,24 @@
 
                 <div class="forou-group">
                     <label class="forou-label">Correo</label>
-                    @Html.TextBoxFor(m => m.Email, new { @class = "forou-input", type = "email" })
+                    @Html.TextBoxFor(m => m.Email, new { @class = "forou-input" })
                     @Html.ValidationMessageFor(m => m.Email)
                 </div>
 
                 <div class="forou-group">
-                    <label class="forou-label">Contraseña</label>
+                    <label class="forou-label">Contrase&ntilde;a</label>
                     @Html.TextBoxFor(m => m.PasswordHash, new { @class = "forou-input", type = "password" })
                     @Html.ValidationMessageFor(m => m.PasswordHash)
                 </div>
 
                 <div class="forou-group">
                     <label class="forou-label">Rol</label>
-                    @Html.DropDownListFor(m => m.Role, new SelectList(new[] { "Estudiante", "Profesor", "Administrador" }), new { @class = "forou-select" })
+                    @Html.DropDownListFor(
+                        m => m.Role,
+                        new SelectList(new[] { "Estudiante", "Profesor", "Administrador" }),
+                        "Seleccione un rol",
+                        new { @class = "forou-select" }
+                    )
                     @Html.ValidationMessageFor(m => m.Role)
                 </div>
             </div>

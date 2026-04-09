@@ -1,0 +1,127 @@
+@model AP.Models.Course
+
+@{
+    ViewBag.Title = "Editar curso";
+}
+
+<style>
+    .forou-form-wrap { max-width: 900px; margin: 0 auto; }
+
+    .forou-page-title { font-size: 26px; font-weight: 800; color: #1a3570; margin-bottom: 6px; }
+    .forou-page-subtitle { color: #5a6a85; margin-bottom: 24px; font-size: 15px; }
+
+    .forou-form-card {
+        background: #fff;
+        border: 1px solid #e2e8f4;
+        border-radius: 16px;
+        padding: 28px;
+        box-shadow: 0 2px 8px rgba(26,53,112,0.06);
+    }
+
+    .forou-group { display: flex; flex-direction: column; margin-bottom: 20px; }
+
+    .forou-label { color: #2d3f60; font-weight: 700; margin-bottom: 8px; font-size: 14px; }
+
+    .forou-input,
+    .forou-textarea {
+        width: 100%;
+        border-radius: 10px;
+        border: 1.5px solid #d0d9ee;
+        background: #f7f9fd;
+        color: #1e2d4a;
+        padding: 0 14px;
+        box-sizing: border-box;
+        font-size: 14px;
+        font-family: inherit;
+    }
+
+    .forou-input { height: 46px; }
+
+    .forou-textarea {
+        min-height: 110px;
+        padding: 12px 14px;
+        resize: vertical;
+    }
+
+    .forou-input:focus,
+    .forou-textarea:focus {
+        outline: none;
+        border-color: #1e4db7;
+        background: #fff;
+        box-shadow: 0 0 0 3px rgba(30,77,183,0.1);
+    }
+
+    .forou-btn-row { margin-top: 26px; display: flex; gap: 12px; flex-wrap: wrap; }
+
+    .forou-btn-primary {
+        display: inline-block;
+        background: linear-gradient(90deg, #1a3570 0%, #1e4db7 100%);
+        color: #fff;
+        padding: 11px 22px;
+        border-radius: 10px;
+        font-weight: 700;
+        border: none;
+        cursor: pointer;
+        font-size: 14px;
+        box-shadow: 0 4px 12px rgba(30,77,183,0.22);
+    }
+    .forou-btn-primary:hover { color: #fff; text-decoration: none; opacity: 0.92; }
+
+    .forou-btn-secondary {
+        display: inline-block;
+        background: #f0f4ff;
+        color: #1e4db7;
+        text-decoration: none;
+        padding: 11px 22px;
+        border-radius: 10px;
+        font-weight: 700;
+        border: 1.5px solid #bfdbfe;
+        font-size: 14px;
+    }
+    .forou-btn-secondary:hover { background: #dbeafe; color: #1e3a8a; text-decoration: none; }
+
+    .forou-error {
+        background: #fee2e2; border: 1px solid #fecaca; color: #991b1b;
+        border-radius: 10px; padding: 12px 16px; margin-bottom: 18px; font-size: 14px;
+    }
+</style>
+
+<div class="forou-breadcrumb">
+    <a href="@Url.Action("Index", "Curso")">Cursos</a>
+    <span class="forou-breadcrumb-sep">›</span>
+    <span class="forou-breadcrumb-current">Editar curso</span>
+</div>
+
+<div class="forou-form-wrap">
+    <div class="forou-page-title">Editar curso</div>
+    <div class="forou-page-subtitle">Modific&aacute; la informaci&oacute;n del curso</div>
+
+    <div class="forou-form-card">
+        @if (ViewBag.Error != null)
+        {
+            <div class="forou-error">@ViewBag.Error</div>
+        }
+
+        @using (Html.BeginForm("Edit", "Curso", new { id = Model.CourseId }, FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+
+            <div class="forou-group">
+                <label class="forou-label">Nombre del curso *</label>
+                <input type="text" name="name" class="forou-input"
+                       value="@Model.Name" placeholder="Ej: Ingenier&iacute;a de Software 2025" required />
+            </div>
+
+            <div class="forou-group">
+                <label class="forou-label">Descripci&oacute;n (opcional)</label>
+                <textarea name="description" class="forou-textarea"
+                          placeholder="Descripci&oacute;n breve del curso...">@Model.Description</textarea>
+            </div>
+
+            <div class="forou-btn-row">
+                <button type="submit" class="forou-btn-primary">Guardar cambios</button>
+                <a class="forou-btn-secondary" href="@Url.Action("Index", "Curso")">Cancelar</a>
+            </div>
+        }
+    </div>
+</div>

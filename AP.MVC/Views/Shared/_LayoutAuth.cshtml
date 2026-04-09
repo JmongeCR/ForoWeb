@@ -1,523 +1,213 @@
-﻿@{
+@{
     var userRole = Session["UserRole"] != null ? Session["UserRole"].ToString() : "";
     var userName = Session["UserName"] != null ? Session["UserName"].ToString() : "Usuario";
-    var currentController = ViewContext.RouteData.Values["controller"] != null ? ViewContext.RouteData.Values["controller"].ToString() : "";
-    var currentAction = ViewContext.RouteData.Values["action"] != null ? ViewContext.RouteData.Values["action"].ToString() : "";
-    var roleLabel = userRole == "Administrador" ? "Panel administrativo" : (userRole == "Profesor" ? "Panel docente" : "Panel estudiantil");
 }
-
-@functions {
-    public System.Web.IHtmlString AppIcon(string name)
-    {
-        var svg = "";
-
-        switch ((name ?? string.Empty).ToLower())
-        {
-            case "home":
-                svg = "<svg viewBox='0 0 24 24' aria-hidden='true'><path d='M3 10.5 12 3l9 7.5'/><path d='M5 9.5V21h14V9.5'/><path d='M9.5 21v-6h5v6'/></svg>";
-                break;
-            case "categories":
-                svg = "<svg viewBox='0 0 24 24' aria-hidden='true'><rect x='3' y='4' width='7' height='7' rx='2'/><rect x='14' y='4' width='7' height='7' rx='2'/><rect x='3' y='13' width='7' height='7' rx='2'/><rect x='14' y='13' width='7' height='7' rx='2'/></svg>";
-                break;
-            case "threads":
-                svg = "<svg viewBox='0 0 24 24' aria-hidden='true'><path d='M6 18h6l4 3v-3h2a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3H6A3 3 0 0 0 3 7v8a3 3 0 0 0 3 3Z'/><path d='M8 9h8'/><path d='M8 13h5'/></svg>";
-                break;
-            case "tasks":
-                svg = "<svg viewBox='0 0 24 24' aria-hidden='true'><path d='M8 4h8'/><path d='M9 3v3'/><path d='M15 3v3'/><rect x='4' y='5' width='16' height='16' rx='3'/><path d='M8 11h8'/><path d='M8 15h5'/></svg>";
-                break;
-            case "profile":
-                svg = "<svg viewBox='0 0 24 24' aria-hidden='true'><circle cx='12' cy='8' r='4'/><path d='M5 20a7 7 0 0 1 14 0'/></svg>";
-                break;
-            case "admin":
-                svg = "<svg viewBox='0 0 24 24' aria-hidden='true'><path d='m12 3 7 4v5c0 4.5-2.8 7.5-7 9-4.2-1.5-7-4.5-7-9V7l7-4Z'/><path d='m9.5 12 1.8 1.8L15 10'/></svg>";
-                break;
-            case "logout":
-                svg = "<svg viewBox='0 0 24 24' aria-hidden='true'><path d='M10 17v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v2'/><path d='M21 12H9'/><path d='m16 7 5 5-5 5'/></svg>";
-                break;
-            case "menu":
-                svg = "<svg viewBox='0 0 24 24' aria-hidden='true'><path d='M4 7h16'/><path d='M4 12h16'/><path d='M4 17h16'/></svg>";
-                break;
-            default:
-                svg = "<svg viewBox='0 0 24 24' aria-hidden='true'><circle cx='12' cy='12' r='8'/></svg>";
-                break;
-        }
-
-        return new System.Web.HtmlString(svg);
-    }
-
-    public string GetInitials(string fullName)
-    {
-        if (string.IsNullOrWhiteSpace(fullName))
-        {
-            return "U";
-        }
-
-        var parts = fullName.Trim().Split(new[] { ' ' }, System.StringSplitOptions.RemoveEmptyEntries);
-        if (parts.Length == 1)
-        {
-            return parts[0].Substring(0, 1).ToUpper();
-        }
-
-        return (parts[0].Substring(0, 1) + parts[parts.Length - 1].Substring(0, 1)).ToUpper();
-    }
-
-    public string NavState(string currentController, string currentAction, string targetController, string targetAction = null)
-    {
-        var sameController = string.Equals(currentController ?? string.Empty, targetController ?? string.Empty, System.StringComparison.OrdinalIgnoreCase);
-        var sameAction = string.IsNullOrWhiteSpace(targetAction) || string.Equals(currentAction ?? string.Empty, targetAction ?? string.Empty, System.StringComparison.OrdinalIgnoreCase);
-        return sameController && sameAction ? "is-active" : string.Empty;
-    }
-}
-
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewBag.Title - ForoU</title>
+    <title>@ViewBag.Title &ndash; ForoU</title>
     @Scripts.Render("~/bundles/modernizr")
-
+    @Styles.Render("~/Content/css")
     <style>
-        :root {
-            --forou-bg: #070b17;
-            --forou-bg-soft: #0d1326;
-            --forou-panel: rgba(14, 20, 39, 0.92);
-            --forou-panel-strong: #11182f;
-            --forou-panel-light: rgba(255,255,255,0.04);
-            --forou-border: rgba(133, 145, 255, 0.16);
-            --forou-border-strong: rgba(133, 145, 255, 0.28);
-            --forou-text: #f6f8ff;
-            --forou-text-soft: #b5c0e0;
-            --forou-primary: #6f7cff;
-            --forou-primary-2: #8f59ff;
-            --forou-danger: #ff7f99;
-            --forou-shadow: 0 24px 60px rgba(0, 0, 0, 0.28);
+        *, *::before, *::after { box-sizing: border-box; }
+        html, body { height: 100%; margin: 0; font-family: 'Segoe UI', Arial, sans-serif; background: #f8fafc; color: #1e293b; }
+
+        .fu-topbar {
+            background: #6366f1;
+            height: 60px;
+            display: flex; align-items: center; padding: 0 24px;
+            position: sticky; top: 0; z-index: 200;
+            box-shadow: 0 2px 8px rgba(99,102,241,0.25);
         }
 
-        * { box-sizing: border-box; }
-        html, body { height: 100%; }
-        body {
-            margin: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            color: var(--forou-text);
-            background:
-                radial-gradient(circle at 0% 0%, rgba(111, 124, 255, 0.18), transparent 28%),
-                radial-gradient(circle at 100% 12%, rgba(143, 89, 255, 0.16), transparent 26%),
-                linear-gradient(180deg, #070b17 0%, #090e1c 100%);
+        .fu-brand {
+            display: flex; align-items: center; gap: 10px;
+            padding-right: 20px; border-right: 1px solid rgba(255,255,255,0.2);
+            margin-right: 18px; text-decoration: none; flex-shrink: 0;
+        }
+        .fu-brand-logo {
+            width: 32px; height: 32px; border-radius: 8px;
+            background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3);
+            color: #fff; font-weight: 900; font-size: 13px;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .fu-brand-name { color: #fff; font-weight: 800; font-size: 16px; }
+
+        .fu-nav { display: flex; align-items: center; gap: 2px; flex: 1; }
+
+        .fu-nav-link {
+            color: rgba(255,255,255,0.7); text-decoration: none;
+            padding: 6px 13px; border-radius: 7px;
+            font-size: 13px; font-weight: 600; transition: all 0.15s; white-space: nowrap;
+        }
+        .fu-nav-link:hover { color: #fff; background: rgba(255,255,255,0.12); text-decoration: none; }
+        .fu-nav-link.active { color: #fff; background: rgba(255,255,255,0.18); text-decoration: none; }
+
+        .fu-nav-sep { width: 1px; height: 18px; background: rgba(255,255,255,0.2); margin: 0 6px; }
+        .fu-nav-section-label { color: rgba(255,255,255,0.4); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; padding: 0 6px; }
+
+        .fu-topbar-right { display: flex; align-items: center; gap: 10px; margin-left: auto; flex-shrink: 0; }
+
+        .fu-role-badge {
+            display: inline-block; padding: 3px 10px; border-radius: 5px;
+            font-size: 11px; font-weight: 700; background: rgba(255,255,255,0.15);
+            color: #fff; border: 1px solid rgba(255,255,255,0.25);
         }
 
-        a { color: inherit; }
+        .fu-user-pill {
+            display: flex; align-items: center; gap: 8px; text-decoration: none;
+            color: #fff; padding: 4px 12px 4px 4px; border-radius: 999px;
+            border: 1px solid rgba(255,255,255,0.25); background: rgba(255,255,255,0.1);
+            font-size: 13px; font-weight: 600; transition: background 0.15s;
+        }
+        .fu-user-pill:hover { background: rgba(255,255,255,0.18); color: #fff; text-decoration: none; }
 
-        .forou-shell {
-            min-height: 100vh;
-            display: grid;
-            grid-template-columns: 290px 1fr;
+        .fu-user-avatar {
+            width: 26px; height: 26px; border-radius: 50%;
+            background: rgba(255,255,255,0.25);
+            color: #fff; font-weight: 800; font-size: 12px;
+            display: flex; align-items: center; justify-content: center;
         }
 
-        .forou-sidebar {
-            position: sticky;
-            top: 0;
-            height: 100vh;
-            padding: 24px 18px;
-            background: linear-gradient(180deg, rgba(8, 12, 25, 0.98) 0%, rgba(10, 14, 28, 0.96) 100%);
-            border-right: 1px solid var(--forou-border);
-            backdrop-filter: blur(16px);
+        .fu-logout-btn {
+            display: flex; align-items: center; justify-content: center;
+            width: 32px; height: 32px; border-radius: 7px;
+            background: transparent; border: 1px solid rgba(255,255,255,0.2);
+            color: rgba(255,255,255,0.65); text-decoration: none; font-size: 14px;
+            transition: all 0.15s;
+        }
+        .fu-logout-btn:hover { background: rgba(255,255,255,0.12); color: #fff; text-decoration: none; }
+
+        .fu-content { padding: 28px 36px; min-height: calc(100vh - 60px - 44px); }
+        .fu-content-inner { max-width: 1400px; margin: 0 auto; }
+
+        .fu-footer { text-align: center; color: #cbd5e1; font-size: 12px; padding: 12px 0 18px; border-top: 1px solid #f1f5f9; }
+
+        /* Global component overrides */
+        .forou-detail-card, .forou-table-card, .forou-form-card, .forou-panel, .forou-submitted-card {
+            background: #fff !important; border: 1px solid #e2e8f0 !important;
+            border-radius: 12px !important; box-shadow: 0 2px 8px rgba(99,102,241,0.06) !important;
         }
 
-        .forou-brand-card {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            padding: 16px;
-            border-radius: 22px;
-            background: linear-gradient(180deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.03) 100%);
-            border: 1px solid var(--forou-border);
-            box-shadow: var(--forou-shadow);
-            margin-bottom: 24px;
+        .forou-task-title, .forou-section-title, .forou-form-title, .forou-admin-title, .forou-page-title { color: #1e293b !important; }
+        .forou-task-desc, .forou-sub-comment, .forou-form-subtitle, .forou-empty, .forou-sub-meta, .forou-page-subtitle { color: #64748b !important; }
+
+        .forou-input-dark, .forou-textarea-dark, .forou-select-dark, .forou-input, .forou-textarea, .forou-select {
+            background: #f8fafc !important; border: 1.5px solid #e2e8f0 !important; color: #1e293b !important;
+        }
+        .forou-input-dark:focus, .forou-textarea-dark:focus, .forou-select-dark:focus,
+        .forou-input:focus, .forou-textarea:focus, .forou-select:focus {
+            border-color: #6366f1 !important; box-shadow: 0 0 0 3px rgba(99,102,241,0.1) !important; background: #fff !important;
         }
 
-        .forou-brand-logo {
-            width: 52px;
-            height: 52px;
-            border-radius: 18px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 800;
-            letter-spacing: 0.02em;
-            color: #fff;
-            background: linear-gradient(135deg, var(--forou-primary) 0%, var(--forou-primary-2) 100%);
-            box-shadow: 0 16px 30px rgba(111, 124, 255, 0.34);
+        .forou-label { color: #475569 !important; }
+
+        .forou-badge-due { background: #ede9fe !important; border: 1px solid #c4b5fd !important; color: #5b21b6 !important; }
+        .forou-badge-overdue { background: #fee2e2 !important; border: 1px solid #fecaca !important; color: #991b1b !important; }
+        .forou-badge-course { background: #ede9fe !important; border: 1px solid #c4b5fd !important; color: #5b21b6 !important; }
+        .forou-student-pill { background: #f5f3ff !important; border: 1px solid #ddd6fe !important; color: #5b21b6 !important; }
+
+        .forou-submission-card { background: #f8fafc !important; border: 1px solid #e2e8f0 !important; }
+        .forou-download-btn { background: #ede9fe !important; border: 1px solid #c4b5fd !important; color: #5b21b6 !important; }
+        .forou-download-btn:hover { background: #ddd6fe !important; }
+
+        .forou-submitted-card { background: #f0fdf4 !important; border: 1px solid #bbf7d0 !important; }
+        .forou-submitted-title { color: #166534 !important; }
+        .forou-success { background: #f0fdf4 !important; border: 1px solid #bbf7d0 !important; color: #166534 !important; }
+        .forou-error { background: #fef2f2 !important; border: 1px solid #fecaca !important; color: #dc2626 !important; }
+
+        .forou-btn-submit, .forou-btn-create, .forou-btn-add, .forou-btn-primary,
+        .forou-task-btn, .forou-create-btn {
+            background: #6366f1 !important; color: #fff !important;
         }
-
-        .forou-brand-title {
-            font-size: 1.3rem;
-            font-weight: 800;
-            margin-bottom: 2px;
+        .forou-btn-secondary, .forou-btn-cancel {
+            background: #f5f3ff !important; color: #6366f1 !important; border-color: #ddd6fe !important;
         }
+        .forou-btn-secondary:hover, .forou-btn-cancel:hover { background: #ede9fe !important; }
 
-        .forou-brand-sub {
-            font-size: 0.9rem;
-            color: var(--forou-text-soft);
-        }
+        .forou-category-btn { background: #6366f1 !important; color: #fff !important; }
+        .forou-category-btn:hover { opacity: 0.9 !important; color: #fff !important; }
 
-        .forou-user-card {
-            padding: 16px;
-            border-radius: 20px;
-            background: rgba(255,255,255,0.03);
-            border: 1px solid var(--forou-border);
-            margin-bottom: 22px;
-        }
+        .forou-table th { background: #f8fafc !important; color: #64748b !important; border-bottom: 1.5px solid #e2e8f0 !important; font-size: 12px !important; text-transform: uppercase !important; letter-spacing: 0.04em !important; }
+        .forou-table td { color: #1e293b !important; border-bottom-color: #f8fafc !important; }
+        .forou-table tr:hover td { background: #f8fafc !important; }
+        .forou-students-table th { color: #64748b !important; border-bottom-color: #e2e8f0 !important; }
+        .forou-students-table td { color: #1e293b !important; border-bottom-color: #f8fafc !important; }
 
-        .forou-user-row {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
+        .forou-action-link { color: #6366f1 !important; }
+        .forou-action-link:hover { color: #4f46e5 !important; }
+        .forou-remove-btn { background: #fee2e2 !important; border-color: #fecaca !important; color: #dc2626 !important; }
+        .forou-remove-btn:hover { background: #fecaca !important; }
 
-        .forou-avatar {
-            width: 48px;
-            height: 48px;
-            border-radius: 16px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 800;
-            color: #fff;
-            background: linear-gradient(135deg, rgba(111, 124, 255, 0.9) 0%, rgba(143, 89, 255, 0.9) 100%);
-            border: 1px solid rgba(255,255,255,0.1);
-        }
+        .forou-breadcrumb a { color: #94a3b8 !important; }
+        .forou-breadcrumb a:hover { color: #6366f1 !important; }
+        .forou-breadcrumb-sep { color: #e2e8f0 !important; }
+        .forou-breadcrumb-current { color: #475569 !important; }
 
-        .forou-user-name {
-            font-size: 0.98rem;
-            font-weight: 700;
-            margin-bottom: 4px;
-        }
+        .forou-info-item { color: #64748b !important; }
+        .forou-info-item strong { color: #1e293b !important; }
+        .forou-file-input { color: #1e293b !important; }
 
-        .forou-user-role {
-            display: inline-flex;
-            align-items: center;
-            padding: 6px 10px;
-            border-radius: 999px;
-            background: rgba(111, 124, 255, 0.14);
-            border: 1px solid rgba(111, 124, 255, 0.28);
-            color: #dfe5ff;
-            font-size: 0.77rem;
-            font-weight: 700;
-        }
-
-        .forou-menu-label {
-            margin: 0 8px 12px;
-            color: var(--forou-text-soft);
-            font-size: 0.72rem;
-            font-weight: 700;
-            letter-spacing: 0.14em;
-            text-transform: uppercase;
-        }
-
-        .forou-nav {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .forou-nav-link {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            padding: 12px 14px;
-            border-radius: 16px;
-            text-decoration: none;
-            color: #e7ecff;
-            border: 1px solid transparent;
-            transition: 0.2s ease;
-        }
-
-        .forou-nav-link:hover,
-        .forou-nav-link.is-active {
-            text-decoration: none;
-            color: #fff;
-            background: linear-gradient(90deg, rgba(111, 124, 255, 0.16) 0%, rgba(143, 89, 255, 0.12) 100%);
-            border-color: var(--forou-border-strong);
-            box-shadow: 0 14px 24px rgba(20, 28, 58, 0.28);
-        }
-
-        .forou-nav-link.is-active .forou-nav-icon {
-            background: linear-gradient(135deg, var(--forou-primary) 0%, var(--forou-primary-2) 100%);
-            border-color: transparent;
-            color: #fff;
-        }
-
-        .forou-nav-text {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-        }
-
-        .forou-nav-title {
-            font-size: 0.95rem;
-            font-weight: 700;
-        }
-
-        .forou-nav-subtitle {
-            font-size: 0.78rem;
-            color: var(--forou-text-soft);
-        }
-
-        .forou-nav-icon,
-        .forou-topbar-button {
-            width: 42px;
-            height: 42px;
-            border-radius: 14px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            border: 1px solid rgba(255,255,255,0.08);
-            background: rgba(255,255,255,0.04);
-            color: #dfe5ff;
-            flex-shrink: 0;
-        }
-
-        .forou-nav-icon svg,
-        .forou-topbar-button svg,
-        .forou-topbar-profile svg {
-            width: 20px;
-            height: 20px;
-            stroke: currentColor;
-            fill: none;
-            stroke-width: 1.8;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-        }
-
-        .forou-main {
-            min-width: 0;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .forou-topbar {
-            position: sticky;
-            top: 0;
-            z-index: 20;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 18px;
-            padding: 18px 28px;
-            background: rgba(7, 11, 23, 0.78);
-            border-bottom: 1px solid var(--forou-border);
-            backdrop-filter: blur(18px);
-        }
-
-        .forou-topbar-left,
-        .forou-topbar-right {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-        }
-
-        .forou-topbar-title {
-            font-size: 1.18rem;
-            font-weight: 800;
-            margin-bottom: 4px;
-        }
-
-        .forou-topbar-subtitle {
-            color: var(--forou-text-soft);
-            font-size: 0.86rem;
-        }
-
-        .forou-topbar-profile {
-            width: 42px;
-            height: 42px;
-            border-radius: 14px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            background: rgba(255,255,255,0.05);
-            border: 1px solid var(--forou-border);
-            color: #e9edff;
-            text-decoration: none;
-        }
-
-        .forou-topbar-button.danger {
-            color: #ffc0cf;
-        }
-
-        .forou-content {
-            flex: 1;
-            padding: 28px;
-        }
-
-        .forou-content-inner {
-            max-width: 1480px;
-            margin: 0 auto;
-        }
-
-        .forou-footer {
-            padding: 0 28px 24px;
-        }
-
-        .forou-footer-inner {
-            max-width: 1480px;
-            margin: 0 auto;
-            padding-top: 16px;
-            border-top: 1px solid rgba(255,255,255,0.06);
-            color: var(--forou-text-soft);
-            font-size: 0.9rem;
-            display: flex;
-            justify-content: space-between;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-
-        @@media (max-width: 1080px) {
-            .forou-shell {
-                grid-template-columns: 1fr;
-            }
-
-            .forou-sidebar {
-                position: relative;
-                height: auto;
-            }
-        }
-
-        @@media (max-width: 768px) {
-            .forou-topbar,
-            .forou-content,
-            .forou-footer {
-                padding-left: 18px;
-                padding-right: 18px;
-            }
-
-            .forou-topbar-subtitle {
-                display: none;
-            }
-        }
+        select, option { background: #fff; color: #1e293b; }
     </style>
 </head>
 <body>
-    <div class="forou-shell">
-        <aside class="forou-sidebar">
-            <div class="forou-brand-card">
-                <div class="forou-brand-logo">FU</div>
-                <div>
-                    <div class="forou-brand-title">ForoU</div>
-                    <div class="forou-brand-sub">Entorno académico digital</div>
-                </div>
-            </div>
+    <header class="fu-topbar">
+        <a class="fu-brand" href="@Url.Action("Index", "Home")">
+            <div class="fu-brand-logo">FU</div>
+            <div class="fu-brand-name">ForoU</div>
+        </a>
 
-            <div class="forou-user-card">
-                <div class="forou-user-row">
-                    <div class="forou-avatar">@GetInitials(userName)</div>
-                    <div>
-                        <div class="forou-user-name">@userName</div>
-                        <div class="forou-user-role">@userRole</div>
-                    </div>
-                </div>
-            </div>
+        <nav class="fu-nav" id="fu-nav">
+            <a class="fu-nav-link" data-controller="home" href="@Url.Action("Index", "Home")">Inicio</a>
+            <a class="fu-nav-link" data-controller="category" href="@Url.Action("Index", "Category")">Foro</a>
+            @if (userRole == "Profesor" || userRole == "Estudiante")
+            {
+                <a class="fu-nav-link" data-controller="assignment" href="@Url.Action("Index", "Assignment")">Tareas</a>
+            }
+            <a class="fu-nav-link" data-controller="profiled" href="@Url.Action("Index", "Profiled")">Mi perfil</a>
+            @if (userRole == "Administrador")
+            {
+                <div class="fu-nav-sep"></div>
+                <span class="fu-nav-section-label">Admin</span>
+                <a class="fu-nav-link" data-controller="admin" href="@Url.Action("Users", "Admin")">Usuarios</a>
+                <a class="fu-nav-link" data-controller="curso" href="@Url.Action("Index", "Curso")">Cursos</a>
+                <a class="fu-nav-link" data-controller="clase" href="@Url.Action("Index", "Clase")">Clases</a>
+            }
+        </nav>
 
-            <div class="forou-menu-label">Navegación</div>
-            <nav class="forou-nav">
-                <a class="forou-nav-link @NavState(currentController, currentAction, "Home", "Index")" href="@Url.Action("Index", "Home")">
-                    <span class="forou-nav-icon">@AppIcon("home")</span>
-                    <span class="forou-nav-text">
-                        <span class="forou-nav-title">Inicio</span>
-                        <span class="forou-nav-subtitle">Vista principal</span>
-                    </span>
-                </a>
+        <div class="fu-topbar-right">
+            <span class="fu-role-badge">@userRole</span>
+            <a class="fu-user-pill" href="@Url.Action("Index", "Profiled")">
+                <div class="fu-user-avatar">@(userName.Length > 0 ? userName[0].ToString().ToUpper() : "U")</div>
+                <span>@userName</span>
+            </a>
+            <a class="fu-logout-btn" href="@Url.Action("Logout", "Access")" title="Cerrar sesi&oacute;n">&#x2715;</a>
+        </div>
+    </header>
 
-                <a class="forou-nav-link @NavState(currentController, currentAction, "Category")" href="@Url.Action("Index", "Category")">
-                    <span class="forou-nav-icon">@AppIcon("categories")</span>
-                    <span class="forou-nav-text">
-                        <span class="forou-nav-title">Categorías</span>
-                        <span class="forou-nav-subtitle">Áreas de consulta</span>
-                    </span>
-                </a>
+    <main class="fu-content">
+        <div class="fu-content-inner">
+            @RenderBody()
+        </div>
+    </main>
 
-                <a class="forou-nav-link @NavState(currentController, currentAction, "Thread")" href="@Url.Action("Index", "Category")">
-                    <span class="forou-nav-icon">@AppIcon("threads")</span>
-                    <span class="forou-nav-text">
-                        <span class="forou-nav-title">Foros</span>
-                        <span class="forou-nav-subtitle">Conversaciones activas</span>
-                    </span>
-                </a>
-
-                <a class="forou-nav-link @NavState(currentController, currentAction, "Assignment")" href="@Url.Action("Index", "Assignment")">
-                    <span class="forou-nav-icon">@AppIcon("tasks")</span>
-                    <span class="forou-nav-text">
-                        <span class="forou-nav-title">Tareas</span>
-                        <span class="forou-nav-subtitle">Entregas y seguimiento</span>
-                    </span>
-                </a>
-
-                <a class="forou-nav-link @NavState(currentController, currentAction, "Profiled")" href="@Url.Action("Index", "Profiled")">
-                    <span class="forou-nav-icon">@AppIcon("profile")</span>
-                    <span class="forou-nav-text">
-                        <span class="forou-nav-title">Mi perfil</span>
-                        <span class="forou-nav-subtitle">Cuenta y datos</span>
-                    </span>
-                </a>
-
-                @if (userRole == "Administrador")
-                {
-                    <a class="forou-nav-link @NavState(currentController, currentAction, "Admin")" href="@Url.Action("Users", "Admin")">
-                        <span class="forou-nav-icon">@AppIcon("admin")</span>
-                        <span class="forou-nav-text">
-                            <span class="forou-nav-title">Administración</span>
-                            <span class="forou-nav-subtitle">Gestión del sistema</span>
-                        </span>
-                    </a>
-                }
-
-                <a class="forou-nav-link" href="@Url.Action("Logout", "Access")">
-                    <span class="forou-nav-icon">@AppIcon("logout")</span>
-                    <span class="forou-nav-text">
-                        <span class="forou-nav-title">Cerrar sesión</span>
-                        <span class="forou-nav-subtitle">Salir de ForoU</span>
-                    </span>
-                </a>
-            </nav>
-        </aside>
-
-        <main class="forou-main">
-            <header class="forou-topbar">
-                <div class="forou-topbar-left">
-                    <div class="forou-topbar-button">@AppIcon("menu")</div>
-                    <div>
-                        <div class="forou-topbar-title">@ViewBag.Title</div>
-                        <div class="forou-topbar-subtitle">@roleLabel</div>
-                    </div>
-                </div>
-
-                <div class="forou-topbar-right">
-                    <a class="forou-topbar-profile" href="@Url.Action("Index", "Profiled")" title="Ver perfil">
-                        @AppIcon("profile")
-                    </a>
-                    <a class="forou-topbar-button danger" href="@Url.Action("Logout", "Access")" title="Cerrar sesión">
-                        @AppIcon("logout")
-                    </a>
-                </div>
-            </header>
-
-            <section class="forou-content">
-                <div class="forou-content-inner">
-                    @RenderBody()
-                </div>
-            </section>
-
-            <footer class="forou-footer">
-                <div class="forou-footer-inner">
-                    <span>© 2026 ForoU</span>
-                    <span>@roleLabel</span>
-                </div>
-            </footer>
-        </main>
-    </div>
+    <footer class="fu-footer">&copy; 2026 ForoU &middot; Plataforma Acad&eacute;mica</footer>
 
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")
     @RenderSection("scripts", required: false)
+    <script>
+        (function () {
+            var path = window.location.pathname.toLowerCase();
+            document.querySelectorAll('#fu-nav .fu-nav-link[data-controller]').forEach(function (link) {
+                var ctrl = '/' + link.getAttribute('data-controller').toLowerCase();
+                if (ctrl === '/home' && (path === '/' || path.indexOf('/home') === 0)) link.classList.add('active');
+                else if (ctrl !== '/home' && path.indexOf(ctrl) === 0) link.classList.add('active');
+            });
+        })();
+    </script>
 </body>
 </html>

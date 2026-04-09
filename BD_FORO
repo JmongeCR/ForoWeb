@@ -1,33 +1,38 @@
 USE [master]
 GO
 
-IF DB_ID('ForoU') IS NULL
+IF DB_ID('ForoWeb') IS NULL
 BEGIN
-    CREATE DATABASE [ForoU];
+    CREATE DATABASE [ForoWeb];
 END
 GO
 
-ALTER DATABASE [ForoU] SET COMPATIBILITY_LEVEL = 150
+ALTER DATABASE [ForoWeb] SET COMPATIBILITY_LEVEL = 150
 GO
 
-USE [ForoU]
+USE [ForoWeb]
 GO
 
-IF OBJECT_ID('dbo.Replies', 'U') IS NOT NULL DROP TABLE dbo.Replies;
-IF OBJECT_ID('dbo.Threads', 'U') IS NOT NULL DROP TABLE dbo.Threads;
-IF OBJECT_ID('dbo.Assignments', 'U') IS NOT NULL DROP TABLE dbo.Assignments;
-IF OBJECT_ID('dbo.Categories', 'U') IS NOT NULL DROP TABLE dbo.Categories;
-IF OBJECT_ID('dbo.Users', 'U') IS NOT NULL DROP TABLE dbo.Users;
+-- Limpiar tablas en orden correcto (respetando FK)
+IF OBJECT_ID('dbo.Submissions',    'U') IS NOT NULL DROP TABLE dbo.Submissions;
+IF OBJECT_ID('dbo.Replies',        'U') IS NOT NULL DROP TABLE dbo.Replies;
+IF OBJECT_ID('dbo.Threads',        'U') IS NOT NULL DROP TABLE dbo.Threads;
+IF OBJECT_ID('dbo.Assignments',    'U') IS NOT NULL DROP TABLE dbo.Assignments;
+IF OBJECT_ID('dbo.ClassStudents',  'U') IS NOT NULL DROP TABLE dbo.ClassStudents;
+IF OBJECT_ID('dbo.Clases',         'U') IS NOT NULL DROP TABLE dbo.Clases;
+IF OBJECT_ID('dbo.Courses',        'U') IS NOT NULL DROP TABLE dbo.Courses;
+IF OBJECT_ID('dbo.Categories',     'U') IS NOT NULL DROP TABLE dbo.Categories;
+IF OBJECT_ID('dbo.Users',          'U') IS NOT NULL DROP TABLE dbo.Users;
 GO
 
 CREATE TABLE [dbo].[Users](
-    [UserId] INT IDENTITY(1,1) NOT NULL,
-    [FullName] NVARCHAR(100) NOT NULL,
-    [Email] NVARCHAR(100) NOT NULL,
-    [Role] NVARCHAR(20) NOT NULL,
-    [IsActive] BIT NOT NULL CONSTRAINT DF_Users_IsActive DEFAULT ((1)),
+    [UserId]       INT IDENTITY(1,1) NOT NULL,
+    [FullName]     NVARCHAR(100) NOT NULL,
+    [Email]        NVARCHAR(100) NOT NULL,
+    [Role]         NVARCHAR(20)  NOT NULL,
+    [IsActive]     BIT NOT NULL CONSTRAINT DF_Users_IsActive DEFAULT ((1)),
     [PasswordHash] NVARCHAR(255) NOT NULL,
-    [PhotoUrl] NVARCHAR(255) NULL,
+    [PhotoUrl]     NVARCHAR(255) NULL,
     CONSTRAINT PK_Users PRIMARY KEY CLUSTERED ([UserId] ASC),
     CONSTRAINT UQ_Users_Email UNIQUE ([Email]),
     CONSTRAINT CK_Users_Role CHECK ([Role] IN ('Profesor', 'Estudiante', 'Administrador'))
@@ -35,30 +40,56 @@ CREATE TABLE [dbo].[Users](
 GO
 
 CREATE TABLE [dbo].[Categories](
-    [CategoryId] INT IDENTITY(1,1) NOT NULL,
-    [Name] NVARCHAR(100) NOT NULL,
+    [CategoryId]  INT IDENTITY(1,1) NOT NULL,
+    [Name]        NVARCHAR(100) NOT NULL,
     [Description] NVARCHAR(300) NULL,
     CONSTRAINT PK_Categories PRIMARY KEY CLUSTERED ([CategoryId] ASC),
     CONSTRAINT UQ_Categories_Name UNIQUE ([Name])
 );
 GO
 
+CREATE TABLE [dbo].[Courses](
+    [CourseId]    INT IDENTITY(1,1) NOT NULL,
+    [Name]        NVARCHAR(150) NOT NULL,
+    [Description] NVARCHAR(500) NULL,
+    [CreatedAt]   DATETIME NOT NULL CONSTRAINT DF_Courses_CreatedAt DEFAULT (GETDATE()),
+    CONSTRAINT PK_Courses PRIMARY KEY CLUSTERED ([CourseId] ASC)
+);
+GO
+
+CREATE TABLE [dbo].[Clases](
+    [ClaseId]     INT IDENTITY(1,1) NOT NULL,
+    [CourseId]    INT NOT NULL,
+    [ProfessorId] INT NOT NULL,
+    [Name]        NVARCHAR(150) NOT NULL,
+    [CreatedAt]   DATETIME NOT NULL CONSTRAINT DF_Clases_CreatedAt DEFAULT (GETDATE()),
+    CONSTRAINT PK_Clases PRIMARY KEY CLUSTERED ([ClaseId] ASC)
+);
+GO
+
+CREATE TABLE [dbo].[ClassStudents](
+    [ClaseId]   INT NOT NULL,
+    [StudentId] INT NOT NULL,
+    CONSTRAINT PK_ClassStudents PRIMARY KEY ([ClaseId], [StudentId])
+);
+GO
+
 CREATE TABLE [dbo].[Threads](
-    [ThreadId] INT IDENTITY(1,1) NOT NULL,
+    [ThreadId]   INT IDENTITY(1,1) NOT NULL,
     [CategoryId] INT NOT NULL,
-    [UserId] INT NOT NULL,
-    [Title] NVARCHAR(150) NOT NULL,
-    [Message] NVARCHAR(MAX) NOT NULL,
-    [CreatedAt] DATETIME NOT NULL CONSTRAINT DF_Threads_CreatedAt DEFAULT (GETDATE()),
+    [UserId]     INT NOT NULL,
+    [Title]      NVARCHAR(150) NOT NULL,
+    [Message]    NVARCHAR(MAX) NOT NULL,
+    [CreatedAt]  DATETIME NOT NULL CONSTRAINT DF_Threads_CreatedAt DEFAULT (GETDATE()),
     CONSTRAINT PK_Threads PRIMARY KEY CLUSTERED ([ThreadId] ASC)
 );
 GO
 
 CREATE TABLE [dbo].[Replies](
-    [ReplyId] INT IDENTITY(1,1) NOT NULL,
-    [ThreadId] INT NOT NULL,
-    [UserId] INT NOT NULL,
-    [Message] NVARCHAR(MAX) NOT NULL,
+    [ReplyId]   INT IDENTITY(1,1) NOT NULL,
+    [ThreadId]  INT NOT NULL,
+    [UserId]    INT NOT NULL,
+    [Message]   NVARCHAR(MAX) NOT NULL,
     [CreatedAt] DATETIME NOT NULL CONSTRAINT DF_Replies_CreatedAt DEFAULT (GETDATE()),
     CONSTRAINT PK_Replies PRIMARY KEY CLUSTERED ([ReplyId] ASC)
 );
@@ -66,59 +97,79 @@ GO
 
 CREATE TABLE [dbo].[Assignments](
     [AssignmentId] INT IDENTITY(1,1) NOT NULL,
-    [CategoryId] INT NOT NULL,
-    [TeacherId] INT NOT NULL,
-    [Title] NVARCHAR(150) NOT NULL,
-    [Description] NVARCHAR(MAX) NOT NULL,
-    [DueDate] DATE NOT NULL,
+    [ProfessorId]  INT NOT NULL,
+    [ClassId]      INT NOT NULL,
+    [Title]        NVARCHAR(150) NOT NULL,
+    [Description]  NVARCHAR(MAX) NOT NULL,
+    [DueDate]      DATETIME NOT NULL,
+    [CreatedAt]    DATETIME NOT NULL CONSTRAINT DF_Assignments_CreatedAt DEFAULT (GETDATE()),
     CONSTRAINT PK_Assignments PRIMARY KEY CLUSTERED ([AssignmentId] ASC)
 );
 GO
 
-ALTER TABLE [dbo].[Threads] WITH CHECK ADD CONSTRAINT FK_Threads_Categories
-FOREIGN KEY([CategoryId]) REFERENCES [dbo].[Categories] ([CategoryId]);
+CREATE TABLE [dbo].[Submissions](
+    [SubmissionId] INT IDENTITY(1,1) NOT NULL,
+    [AssignmentId] INT NOT NULL,
+    [StudentId]    INT NOT NULL,
+    [FileUrl]      NVARCHAR(500) NULL,
+    [Comment]      NVARCHAR(MAX) NULL,
+    [SubmittedAt]  DATETIME NOT NULL CONSTRAINT DF_Submissions_SubmittedAt DEFAULT (GETDATE()),
+    CONSTRAINT PK_Submissions PRIMARY KEY CLUSTERED ([SubmissionId] ASC)
+);
 GO
 
-ALTER TABLE [dbo].[Threads] WITH CHECK ADD CONSTRAINT FK_Threads_Users
-FOREIGN KEY([UserId]) REFERENCES [dbo].[Users] ([UserId]);
-GO
-
-ALTER TABLE [dbo].[Replies] WITH CHECK ADD CONSTRAINT FK_Replies_Threads
-FOREIGN KEY([ThreadId]) REFERENCES [dbo].[Threads] ([ThreadId]);
-GO
-
-ALTER TABLE [dbo].[Replies] WITH CHECK ADD CONSTRAINT FK_Replies_Users
-FOREIGN KEY([UserId]) REFERENCES [dbo].[Users] ([UserId]);
-GO
-
-ALTER TABLE [dbo].[Assignments] WITH CHECK ADD CONSTRAINT FK_Assignments_Categories
-FOREIGN KEY([CategoryId]) REFERENCES [dbo].[Categories] ([CategoryId]);
-GO
-
-ALTER TABLE [dbo].[Assignments] WITH CHECK ADD CONSTRAINT FK_Assignments_Users
-FOREIGN KEY([TeacherId]) REFERENCES [dbo].[Users] ([UserId]);
+-- Foreign Keys
+ALTER TABLE [dbo].[Clases]        ADD CONSTRAINT FK_Clases_Courses    FOREIGN KEY ([CourseId])    REFERENCES [dbo].[Courses]  ([CourseId]);
+ALTER TABLE [dbo].[Clases]        ADD CONSTRAINT FK_Clases_Users      FOREIGN KEY ([ProfessorId]) REFERENCES [dbo].[Users]    ([UserId]);
+ALTER TABLE [dbo].[ClassStudents] ADD CONSTRAINT FK_CS_Clases         FOREIGN KEY ([ClaseId])     REFERENCES [dbo].[Clases]   ([ClaseId]);
+ALTER TABLE [dbo].[ClassStudents] ADD CONSTRAINT FK_CS_Users          FOREIGN KEY ([StudentId])   REFERENCES [dbo].[Users]    ([UserId]);
+ALTER TABLE [dbo].[Threads]       ADD CONSTRAINT FK_Threads_Categories FOREIGN KEY ([CategoryId]) REFERENCES [dbo].[Categories] ([CategoryId]);
+ALTER TABLE [dbo].[Threads]       ADD CONSTRAINT FK_Threads_Users     FOREIGN KEY ([UserId])      REFERENCES [dbo].[Users]    ([UserId]);
+ALTER TABLE [dbo].[Replies]       ADD CONSTRAINT FK_Replies_Threads   FOREIGN KEY ([ThreadId])    REFERENCES [dbo].[Threads]  ([ThreadId]);
+ALTER TABLE [dbo].[Replies]       ADD CONSTRAINT FK_Replies_Users     FOREIGN KEY ([UserId])      REFERENCES [dbo].[Users]    ([UserId]);
+ALTER TABLE [dbo].[Assignments]   ADD CONSTRAINT FK_Assignments_Clases  FOREIGN KEY ([ClassId])   REFERENCES [dbo].[Clases]   ([ClaseId]);
+ALTER TABLE [dbo].[Assignments]   ADD CONSTRAINT FK_Assignments_Users   FOREIGN KEY ([ProfessorId]) REFERENCES [dbo].[Users] ([UserId]);
+ALTER TABLE [dbo].[Submissions]   ADD CONSTRAINT FK_Submissions_Assignments FOREIGN KEY ([AssignmentId]) REFERENCES [dbo].[Assignments] ([AssignmentId]);
+ALTER TABLE [dbo].[Submissions]   ADD CONSTRAINT FK_Submissions_Users  FOREIGN KEY ([StudentId])  REFERENCES [dbo].[Users]    ([UserId]);
 GO
 
 -- DATOS DE PRUEBA
-USE [ForoU]
+USE [ForoWeb]
 GO
 
 SET IDENTITY_INSERT dbo.Users ON;
 INSERT INTO dbo.Users (UserId, FullName, Email, Role, IsActive, PasswordHash, PhotoUrl) VALUES
-(1, 'Chris Beita', 'chrisbeita@ufide.ac.cr', 'Administrador', 1, '123456', '~/Content/img/default-avatar.png'),
-(2, 'Estudiante Demo', 'estudiante@ForoU.com', 'Estudiante', 1, '123456', '~/Content/img/default-avatar.png'),
-(3, 'Profesor Demo', 'profesor@ForoU.com', 'Profesor', 1, '123456', '~/Content/img/default-avatar.png');
+(1, 'Chris Beita',    'chrisbeita@ufide.ac.cr', 'Administrador', 1, '123456', '~/Content/img/default-avatar.png'),
+(2, 'Estudiante Demo','estudiante@ForoU.com',   'Estudiante',    1, '123456', '~/Content/img/default-avatar.png'),
+(3, 'Profesor Demo',  'profesor@ForoU.com',     'Profesor',      1, '123456', '~/Content/img/default-avatar.png');
 SET IDENTITY_INSERT dbo.Users OFF;
 GO
 
 SET IDENTITY_INSERT dbo.Categories ON;
 INSERT INTO dbo.Categories (CategoryId, Name, Description) VALUES
-(1, 'Bases de Datos', 'Consultas sobre SQL, modelado y administración de bases de datos.'),
-(2, 'Programación', 'Consultas sobre desarrollo, lógica y proyectos de programación.'),
-(3, 'Ingeniería de Software', 'Buenas prácticas, UML, documentación y metodologías.'),
-(4, 'Redes', 'Consultas sobre redes, conectividad e infraestructura.'),
-(5, 'Sistemas Operativos', 'Dudas sobre Windows, Linux y administración de sistemas.');
+(1, 'Bases de Datos',       'Consultas sobre SQL, modelado y administración de bases de datos.'),
+(2, 'Programación',         'Consultas sobre desarrollo, lógica y proyectos de programación.'),
+(3, 'Ingeniería de Software','Buenas prácticas, UML, documentación y metodologías.'),
+(4, 'Redes',                'Consultas sobre redes, conectividad e infraestructura.'),
+(5, 'Sistemas Operativos',  'Dudas sobre Windows, Linux y administración de sistemas.');
 SET IDENTITY_INSERT dbo.Categories OFF;
+GO
+
+SET IDENTITY_INSERT dbo.Courses ON;
+INSERT INTO dbo.Courses (CourseId, Name, Description, CreatedAt) VALUES
+(1, 'Programación Avanzada', 'Curso de desarrollo de software orientado a objetos.', GETDATE()),
+(2, 'Bases de Datos',        'Fundamentos de SQL y diseño de bases de datos.',        GETDATE());
+SET IDENTITY_INSERT dbo.Courses OFF;
+GO
+
+SET IDENTITY_INSERT dbo.Clases ON;
+INSERT INTO dbo.Clases (ClaseId, CourseId, ProfessorId, Name, CreatedAt) VALUES
+(1, 1, 3, 'Programación Avanzada - Grupo A', GETDATE()),
+(2, 2, 3, 'Bases de Datos - Grupo A',        GETDATE());
+SET IDENTITY_INSERT dbo.Clases OFF;
+GO
+
+INSERT INTO dbo.ClassStudents (ClaseId, StudentId) VALUES (1, 2), (2, 2);
 GO
 
 SET IDENTITY_INSERT dbo.Threads ON;
@@ -138,9 +189,8 @@ SET IDENTITY_INSERT dbo.Replies OFF;
 GO
 
 SET IDENTITY_INSERT dbo.Assignments ON;
-INSERT INTO dbo.Assignments (AssignmentId, CategoryId, TeacherId, Title, Description, DueDate) VALUES
-(1, 1, 3, 'Modelo relacional', 'Diseñar el modelo relacional de la práctica.', '2026-03-15'),
-(2, 2, 3, 'Proyecto final de programación', 'Avance 1 del proyecto final.', '2026-03-20'),
-(3, 3, 1, 'Documento UML', 'Entregar diagrama de clases y casos de uso.', '2026-03-18');
+INSERT INTO dbo.Assignments (AssignmentId, ProfessorId, ClassId, Title, Description, DueDate, CreatedAt) VALUES
+(1, 3, 1, 'Proyecto Final - Avance 1', 'Primer avance del proyecto final del curso.', '2026-05-01', GETDATE()),
+(2, 3, 2, 'Modelo Relacional',         'Diseñar el modelo relacional de la práctica.',  '2026-05-10', GETDATE());
 SET IDENTITY_INSERT dbo.Assignments OFF;
 GO

@@ -1,56 +1,92 @@
 @model AP.Models.Thread
 
 @{
-    ViewBag.Title = "Crear nueva publicación";
-    var categoryId = Model != null ? Model.CategoryId : 0;
+    ViewBag.Title = "Crear consulta";
 }
 
 <style>
-    .forou-create-wrap { max-width:980px; margin:0 auto; }
-    .forou-create-card { background:#111328; border:1px solid rgba(123,137,255,0.14); border-radius:20px; padding:28px; box-shadow:0 18px 40px rgba(0,0,0,0.18); }
-    .forou-create-title { font-size:34px; font-weight:800; color:#fff; margin-bottom:8px; }
-    .forou-create-subtitle { color:#c7d0f1; margin-bottom:24px; font-size:17px; }
-    .forou-group { margin-bottom:20px; }
-    .forou-label { display:block; color:#dbe2ff; font-weight:700; margin-bottom:8px; font-size:16px; }
-    .forou-input, .forou-textarea {
-        width:100%; border-radius:12px; border:1px solid rgba(123,137,255,0.22); background:#0c1022; color:#eef1ff; box-sizing:border-box; font-size:16px;
+    .forou-form-wrap { max-width: 860px; margin: 0 auto; }
+    .forou-page-title { font-size: 26px; font-weight: 800; color: #1a3570; margin-bottom: 6px; }
+    .forou-page-subtitle { color: #5a6a85; margin-bottom: 24px; font-size: 15px; }
+
+    .forou-form-card {
+        background: #fff; border: 1px solid #e2e8f4;
+        border-radius: 16px; padding: 28px;
+        box-shadow: 0 2px 10px rgba(26,53,112,0.07);
     }
-    .forou-input { height:50px; padding:0 14px; }
-    .forou-textarea { min-height:180px; padding:14px; resize:vertical; }
-    .forou-input:focus, .forou-textarea:focus { outline:none; border-color:#6d79ff; box-shadow:0 0 0 3px rgba(109,121,255,0.12); }
-    .forou-btn-row { margin-top:26px; display:flex; gap:12px; flex-wrap:wrap; }
-    .forou-btn-primary { display:inline-block; background:linear-gradient(90deg,#5f6fff 0%,#7e49ff 100%); color:#fff; text-decoration:none; padding:12px 18px; border-radius:12px; font-weight:700; border:none; cursor:pointer; }
-    .forou-btn-secondary { display:inline-block; background:transparent; color:#dbe2ff; text-decoration:none; padding:12px 18px; border-radius:12px; font-weight:700; border:1px solid rgba(123,137,255,0.24); }
-    .forou-btn-secondary:hover { color:#fff; text-decoration:none; background:rgba(255,255,255,0.04); }
-    .field-validation-error, .validation-summary-errors { color:#ffb4c2; }
+
+    .forou-group { display: flex; flex-direction: column; margin-bottom: 18px; }
+    .forou-label { color: #2d3f60; font-weight: 700; margin-bottom: 8px; font-size: 14px; }
+
+    .forou-input-dark, .forou-textarea-dark {
+        width: 100%; border-radius: 10px;
+        border: 1.5px solid #d0d9ee;
+        background: #f7f9fd; color: #1e2d4a;
+        box-sizing: border-box; font-size: 15px; font-family: inherit;
+    }
+    .forou-input-dark { height: 46px; padding: 0 14px; }
+    .forou-textarea-dark { min-height: 140px; padding: 12px 14px; resize: vertical; }
+    .forou-input-dark:focus, .forou-textarea-dark:focus {
+        outline: none; border-color: #1e4db7; background: #fff;
+        box-shadow: 0 0 0 3px rgba(30,77,183,0.1);
+    }
+
+    .forou-btn-row { margin-top: 22px; display: flex; gap: 10px; flex-wrap: wrap; }
+
+    .forou-btn-submit {
+        display: inline-block;
+        background: linear-gradient(90deg, #1a3570 0%, #1e4db7 100%);
+        color: #fff; border: none; padding: 11px 22px;
+        border-radius: 10px; font-weight: 700; cursor: pointer;
+        font-size: 15px; font-family: inherit;
+        box-shadow: 0 4px 12px rgba(30,77,183,0.2);
+    }
+    .forou-btn-submit:hover { opacity: 0.9; }
+
+    .forou-btn-cancel {
+        display: inline-block; background: #f0f4fa;
+        color: #1e4db7; text-decoration: none;
+        padding: 11px 22px; border-radius: 10px;
+        font-weight: 700; border: 1px solid #d0d9ee; font-size: 15px;
+    }
+    .forou-btn-cancel:hover { background: #dbeafe; color: #1a3570; text-decoration: none; }
+
+    .field-validation-error { color: #9b1535; font-size: 13px; margin-top: 4px; }
 </style>
 
-<div class="forou-create-wrap">
-    <div class="forou-create-card">
-        <div class="forou-create-title">Crear nueva publicación</div>
-        <div class="forou-create-subtitle">Publicá una duda o conversación en esta categoría</div>
+<div class="forou-breadcrumb">
+    <a href="@Url.Action("Index", "Category")">Categor&iacute;as</a>
+    <span class="forou-breadcrumb-sep">&rsaquo;</span>
+    <a href="@Url.Action("Index", "Thread", new { categoryId = Model.CategoryId })">Consultas</a>
+    <span class="forou-breadcrumb-sep">&rsaquo;</span>
+    <span class="forou-breadcrumb-current">Nueva consulta</span>
+</div>
 
-        @using (Html.BeginForm("Create", "Thread", FormMethod.Post))
+<div class="forou-form-wrap">
+    <div class="forou-page-title">Nueva consulta</div>
+    <div class="forou-page-subtitle">Public&aacute; tu duda o conversaci&oacute;n en esta categor&iacute;a</div>
+
+    <div class="forou-form-card">
+        @using (Html.BeginForm())
         {
             @Html.AntiForgeryToken()
-            @Html.ValidationSummary(true, "", new { @class = "validation-summary-errors" })
             @Html.HiddenFor(m => m.CategoryId)
 
             <div class="forou-group">
-                <label class="forou-label">Título</label>
-                @Html.TextBoxFor(m => m.Title, new { @class = "forou-input" })
+                <label class="forou-label">T&iacute;tulo</label>
+                @Html.TextBoxFor(m => m.Title, new { @class = "forou-input-dark", placeholder = "Escrib\u00ed un t\u00edtulo claro y descriptivo", required = "required" })
                 @Html.ValidationMessageFor(m => m.Title)
             </div>
 
             <div class="forou-group">
                 <label class="forou-label">Mensaje</label>
-                @Html.TextAreaFor(m => m.Message, new { @class = "forou-textarea" })
+                @Html.TextAreaFor(m => m.Message, new { @class = "forou-textarea-dark", rows = 7, placeholder = "Describ\u00ed tu consulta con el mayor detalle posible..." })
                 @Html.ValidationMessageFor(m => m.Message)
             </div>
 
             <div class="forou-btn-row">
-                <button type="submit" class="forou-btn-primary">Publicar</button>
-                <a class="forou-btn-secondary" href="@Url.Action("Index", "Thread", new { categoryId = categoryId })">Cancelar</a>
+                <button type="submit" class="forou-btn-submit">Publicar consulta</button>
+                @Html.ActionLink("Cancelar", "Index", "Thread", new { categoryId = Model.CategoryId }, new { @class = "forou-btn-cancel" })
             </div>
         }
     </div>

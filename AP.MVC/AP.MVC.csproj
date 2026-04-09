@@ -126,7 +126,14 @@
     <Compile Include="Models\ThreadDetailsVM.cs" />
     <Compile Include="obj\Debug\.NETFramework,Version=v4.8.1.AssemblyAttributes.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  <Compile Include="Filters\SessionAuthorizeAttribute.cs" /><Compile Include="Controllers\AssignmentController.cs" /></ItemGroup>
+  <Compile Include="Filters\SessionAuthorizeAttribute.cs" />
+    <Compile Include="Controllers\AssignmentController.cs" />
+    <Compile Include="Controllers\CursoController.cs" />
+    <Compile Include="Controllers\ClaseController.cs" />
+    <Compile Include="Models\AssignmentDetailsVM.cs" />
+    <Compile Include="Models\CreateAssignmentVM.cs" />
+    <Compile Include="Models\ClaseDetailsVM.cs" />
+    <Compile Include="Models\CreateClaseVM.cs" /></ItemGroup>
   <ItemGroup>
     <Content Include="bin\Antlr3.Runtime.dll" />
     <Content Include="bin\Antlr3.Runtime.pdb" />
@@ -263,7 +270,18 @@
     <Content Include="Views\Product\Product.cshtml" />
     <Content Include="Views\Access\Login.cshtml" />
     <Content Include="Views\Shared\LayoutAuth.cshtml" />
-  <Content Include="Views\Assignment\Index.cshtml" /><Content Include="Views\Assignment\Create.cshtml" /><Content Include="Views\Assignment\Details.cshtml" /></ItemGroup>
+    <Content Include="Views\Shared\_LayoutAuth.cshtml" />
+    <Content Include="Views\Shared\_LayoutLogin.cshtml" />
+    <Content Include="Content\img\fidelitas-logo.png" />
+  <Content Include="Views\Assignment\Index.cshtml" />
+    <Content Include="Views\Assignment\Create.cshtml" />
+    <Content Include="Views\Assignment\Details.cshtml" />
+    <Content Include="Views\Clase\Index.cshtml" />
+    <Content Include="Views\Clase\Create.cshtml" />
+    <Content Include="Views\Clase\Details.cshtml" />
+    <Content Include="Views\Curso\Index.cshtml" />
+    <Content Include="Views\Curso\Create.cshtml" />
+    <Content Include="Views\Curso\Edit.cshtml" /></ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
   </ItemGroup>

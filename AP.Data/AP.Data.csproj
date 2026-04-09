@@ -48,7 +48,10 @@
     <Compile Include="ThreadRepository.cs" />
     <Compile Include="DataProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  <Compile Include="AssignmentRepository.cs" /></ItemGroup>
+  <Compile Include="AssignmentRepository.cs" />
+    <Compile Include="CourseRepository.cs" />
+    <Compile Include="ClaseRepository.cs" />
+    <Compile Include="SubmissionRepository.cs" /></ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AP.Models\AP.Models.csproj">
       <Project>{e5241884-31ad-4da4-8e67-ae5af9592d1a}</Project>

@@ -9,6 +9,7 @@ namespace AP.Business
     {
         private readonly ThreadRepository _threadRepo = new ThreadRepository();
         private readonly ReplyRepository _replyRepo = new ReplyRepository();
+        private readonly CategoryRepository _categoryRepo = new CategoryRepository();
 
         public List<Thread> GetThreads() => _threadRepo.GetThreads();
 
@@ -24,6 +25,12 @@ namespace AP.Business
         public List<Thread> GetThreadsByCategory(int categoryId)
         {
             return _threadRepo.GetThreadsByCategory(categoryId);
+        }
+
+        public string GetCategoryName(int categoryId)
+        {
+            var cat = _categoryRepo.GetAll().Find(c => c.CategoryId == categoryId);
+            return cat != null ? cat.Name : "Canal";
         }
     }
 }

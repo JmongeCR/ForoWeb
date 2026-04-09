@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
@@ -7,133 +7,138 @@
     @Scripts.Render("~/bundles/modernizr")
 
     <style>
+        *, *::before, *::after { box-sizing: border-box; }
+
         html, body {
-            height: 100%;
+            height: 100%; margin: 0;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #f1f5f9;
         }
 
         body {
-            margin: 0;
-            font-family: Arial, Helvetica, sans-serif;
             min-height: 100vh;
-            position: relative;
-            overflow: hidden;
-            background: radial-gradient(circle at bottom left, rgba(110, 44, 255, 0.18), transparent 25%), #091022;
-            color: #1f2a44;
-        }
-
-        .forou-login-bg {
-            position: fixed;
-            inset: 0;
-            background-image: radial-gradient(rgba(255,255,255,0.15) 1px, transparent 1px);
-            background-size: 48px 48px;
-            opacity: 0.35;
-            pointer-events: none;
-        }
-
-        .forou-login-wrap {
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            z-index: 1;
+            display: flex; align-items: center; justify-content: center;
             padding: 24px;
-            box-sizing: border-box;
         }
 
-        .forou-login-card {
-            width: 100%;
-            max-width: 470px;
-            background: rgba(229, 233, 244, 0.92);
-            border-radius: 24px;
-            padding: 34px;
-            box-sizing: border-box;
-            box-shadow: 0 30px 60px rgba(0,0,0,0.28);
-            border: 1px solid rgba(255,255,255,0.4);
+        .login-container {
+            width: 100%; max-width: 860px;
+            display: grid; grid-template-columns: 1fr 1fr;
+            border-radius: 16px; overflow: hidden;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            min-height: 480px;
         }
 
-        .forou-login-footer {
-            margin-top: 16px;
-            color: #ffffff;
-            font-size: 14px;
-        }
-
-        .forou-form-title {
-            font-size: 24px;
-            font-weight: 800;
-            color: #1f2a44;
-            text-align: center;
-            margin-bottom: 8px;
-        }
-
-        .forou-form-subtitle {
-            color: #55607a;
-            text-align: center;
-            margin-bottom: 26px;
-            font-size: 15px;
-        }
-
-        .forou-form-label {
-            display: block;
-            color: #2f3a55;
-            font-weight: 600;
-            margin-bottom: 6px;
-        }
-
-        .forou-input {
-            width: 100%;
-            height: 48px;
-            border-radius: 10px;
-            border: 1px solid #cfd6eb;
-            background: #fff;
-            padding: 0 14px;
-            box-sizing: border-box;
-            font-size: 15px;
-            margin-bottom: 16px;
-        }
-
-            .forou-input:focus {
-                outline: none;
-                border-color: #5c6cff;
-                box-shadow: 0 0 0 3px rgba(92,108,255,0.14);
-            }
-
-        .forou-btn-primary {
-            background: linear-gradient(90deg, #0d1734 0%, #16264f 100%);
+        /* LEFT */
+        .login-brand {
+            background: #6366f1;
+            padding: 52px 44px;
+            display: flex; flex-direction: column; justify-content: center;
             color: #fff;
-            border: none;
-            height: 50px;
-            border-radius: 12px;
-            width: 100%;
-            font-size: 18px;
-            font-weight: 700;
-            cursor: pointer;
-            box-shadow: 0 10px 24px rgba(7, 17, 42, 0.25);
         }
 
-        .forou-alert {
-            background: #ffd9df;
-            color: #8b1730;
-            border: 1px solid #f3a8b7;
-            border-radius: 10px;
-            padding: 12px 14px;
-            margin-bottom: 18px;
+        .login-brand-logo {
+            width: 46px; height: 46px; border-radius: 11px;
+            background: rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.3);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px; font-weight: 900;
+            margin-bottom: 28px;
+        }
+
+        .login-brand-title {
+            font-size: 28px; font-weight: 800;
+            line-height: 1.25; margin-bottom: 14px;
+        }
+
+        .login-brand-sub {
+            font-size: 15px; opacity: 0.75; line-height: 1.65;
+        }
+
+        /* RIGHT */
+        .login-form-panel {
+            background: #fff;
+            padding: 52px 44px;
+            display: flex; flex-direction: column; justify-content: center;
+        }
+
+        .login-form-header { margin-bottom: 28px; }
+
+        .login-form-title {
+            font-size: 22px; font-weight: 700;
+            color: #1e293b; margin-bottom: 6px;
+        }
+
+        .login-form-subtitle { color: #94a3b8; font-size: 14px; }
+
+        .login-label {
+            display: block; font-size: 13px; font-weight: 600;
+            color: #475569; margin-bottom: 7px;
+        }
+
+        .login-input {
+            width: 100%; height: 46px;
+            border-radius: 9px; border: 1.5px solid #e2e8f0;
+            background: #f8fafc; padding: 0 14px;
+            font-size: 14px; font-family: inherit;
+            color: #1e293b; margin-bottom: 18px;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .login-input:focus {
+            outline: none; border-color: #6366f1;
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(99,102,241,0.1);
+        }
+
+        .login-btn {
+            width: 100%; height: 48px;
+            border-radius: 9px; border: none;
+            background: #6366f1;
+            color: #fff; font-size: 15px; font-weight: 700;
+            cursor: pointer; font-family: inherit;
+            transition: background 0.2s;
+            margin-top: 4px;
+        }
+
+        .login-btn:hover { background: #4f46e5; }
+
+        .login-alert {
+            background: #fef2f2; color: #dc2626;
+            border: 1px solid #fecaca;
+            border-radius: 9px;
+            padding: 11px 14px; margin-bottom: 18px; font-size: 13px;
+        }
+
+        .login-footer {
+            text-align: center; color: #cbd5e1;
+            font-size: 12px; margin-top: 24px;
+        }
+
+        @@media (max-width: 640px) {
+            .login-container { grid-template-columns: 1fr; }
+            .login-brand { display: none; }
+            .login-form-panel { padding: 36px 28px; }
         }
     </style>
 </head>
 <body>
-    <div class="forou-login-bg"></div>
+    <div class="login-container">
 
-    <main class="forou-login-wrap">
-        <div class="forou-login-card">
+        <div class="login-brand">
+            <img src="/Content/img/fidelitas-logo.png" alt="Universidad Fidelitas"
+                 style="width:180px; margin-bottom:32px; background:#fff; border-radius:10px; padding:10px 14px;" />
+            <div class="login-brand-title">ForoU<br/>Plataforma Acad&eacute;mica</div>
+            <div class="login-brand-sub">Tu espacio de aprendizaje colaborativo para consultas, tareas y comunicaci&oacute;n con profesores.</div>
+        </div>
+
+        <div class="login-form-panel">
             @RenderBody()
+            <div class="login-footer">&copy; 2026 ForoU &middot; Plataforma Acad&eacute;mica</div>
         </div>
 
-        <div class="forou-login-footer">
-            © 2026 ForoU
-        </div>
-    </main>
+    </div>
 
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")

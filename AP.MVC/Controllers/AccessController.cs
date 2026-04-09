@@ -1,8 +1,13 @@
+﻿using System;
 using System.Web.Mvc;
 using AP.Business;
 
 namespace AP.MVC.Controllers
 {
+    // SOLID: Single Responsibility Principle (SRP) - unica responsabilidad: manejar
+    //        autenticacion (login/logout) y gestion de sesion del usuario.
+    // SOLID: Dependency Inversion Principle (DIP) - depende de UserBusiness (capa de negocio),
+    //        no de repositorios o SQL directamente.
     public class AccessController : Controller
     {
         private readonly UserBusiness _userBusiness = new UserBusiness();
@@ -10,9 +15,6 @@ namespace AP.MVC.Controllers
         [HttpGet]
         public ActionResult Login()
         {
-            if (Session["UserId"] != null)
-                return RedirectToAction("Index", "Home");
-
             return View();
         }
 
@@ -20,20 +22,11 @@ namespace AP.MVC.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Login(string email, string password)
         {
-            email = (email ?? string.Empty).Trim();
-            password = password ?? string.Empty;
-
-            if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
-            {
-                ViewBag.Error = "Debés ingresar el correo y la contraseña.";
-                return View();
-            }
-
             var user = _userBusiness.ValidateLogin(email, password);
 
             if (user == null)
             {
-                ViewBag.Error = "Correo o contraseña incorrectos, o el usuario está inactivo.";
+                ViewBag.Error = "Correo o contraseña incorrectos.";
                 return View();
             }
 

@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using System.Web.Mvc;
 using AP.Business;
 using AP.Models;
@@ -10,20 +12,61 @@ namespace AP.MVC.Controllers
     {
         private readonly UserBusiness _userBusiness = new UserBusiness();
 
+        private List<SelectListItem> UserFieldOptions() => new List<SelectListItem>
+        {
+            new SelectListItem { Value = "Todos",  Text = "Todos los campos" },
+            new SelectListItem { Value = "Nombre", Text = "Nombre" },
+            new SelectListItem { Value = "Correo", Text = "Correo" },
+            new SelectListItem { Value = "Rol",    Text = "Rol" }
+        };
+
         public ActionResult Users()
         {
+            ViewBag.CurrentCriteria = "";
+            ViewBag.CurrentField    = "Todos";
+            ViewBag.FieldOptions    = UserFieldOptions();
             var users = _userBusiness.GetUsers();
             return View(users);
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult SearchUsers(string criteria, string field)
+        {
+            var users = _userBusiness.GetUsers();
+
+            if (!string.IsNullOrWhiteSpace(criteria))
+            {
+                var q = criteria.Trim().ToLower();
+                switch (field)
+                {
+                    case "Nombre":
+                        users = users.Where(u => u.FullName.ToLower().Contains(q)).ToList();
+                        break;
+                    case "Correo":
+                        users = users.Where(u => u.Email.ToLower().Contains(q)).ToList();
+                        break;
+                    case "Rol":
+                        users = users.Where(u => u.Role.ToLower().Contains(q)).ToList();
+                        break;
+                    default:
+                        users = users.Where(u =>
+                            u.FullName.ToLower().Contains(q) ||
+                            u.Email.ToLower().Contains(q) ||
+                            u.Role.ToLower().Contains(q)).ToList();
+                        break;
+                }
+            }
+
+            ViewBag.CurrentCriteria = criteria;
+            ViewBag.CurrentField    = field;
+            ViewBag.FieldOptions    = UserFieldOptions();
+            return View("Users", users);
+        }
+
         public ActionResult CreateUser()
         {
-            return View(new User
-            {
-                IsActive = true,
-                Role = "Estudiante",
-                PhotoUrl = "~/Content/img/default-avatar.png"
-            });
+            return View(new User { IsActive = true, Role = "Estudiante" });
         }
 
         [HttpPost]
@@ -33,8 +76,7 @@ namespace AP.MVC.Controllers
             if (string.IsNullOrWhiteSpace(model.PasswordHash))
                 model.PasswordHash = "123456";
 
-            if (string.IsNullOrWhiteSpace(model.PhotoUrl))
-                model.PhotoUrl = "~/Content/img/default-avatar.png";
+            model.PhotoUrl = "~/Content/img/default-avatar.png";
 
             if (!ModelState.IsValid)
                 return View(model);
@@ -46,7 +88,6 @@ namespace AP.MVC.Controllers
             }
 
             _userBusiness.CreateUser(model);
-            TempData["Success"] = "Usuario creado correctamente.";
             return RedirectToAction("Users");
         }
 
@@ -94,7 +135,6 @@ namespace AP.MVC.Controllers
                     : model.PhotoUrl;
             }
 
-            TempData["Success"] = "Usuario actualizado correctamente.";
             return RedirectToAction("Users");
         }
     }

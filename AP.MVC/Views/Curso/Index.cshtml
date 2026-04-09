@@ -1,0 +1,252 @@
+@model List<AP.Models.Course>
+
+@{
+    ViewBag.Title = "Cursos";
+}
+
+<style>
+    .forou-admin-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 24px;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+    .forou-admin-title {
+        font-size: 26px;
+        font-weight: 800;
+        color: #1a3570;
+    }
+
+    .forou-table-card {
+        background: #fff;
+        border: 1px solid #e2e8f4;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(26,53,112,0.06);
+    }
+
+    .forou-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+        .forou-table thead {
+            background: #f7f9fd;
+        }
+
+        .forou-table th {
+            text-align: left;
+            padding: 14px 20px;
+            color: #1a3570;
+            font-size: 12px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid #e2e8f4;
+        }
+
+        .forou-table td {
+            padding: 14px 20px;
+            color: #4a5e7a;
+            font-size: 14px;
+            border-bottom: 1px solid #f0f4fa;
+        }
+
+        .forou-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .forou-table tr:hover td {
+            background: #f7f9fd;
+        }
+
+    .forou-action-link {
+        color: #1e4db7;
+        text-decoration: none;
+        font-weight: 700;
+        font-size: 13px;
+        margin-right: 10px;
+        background: #f0f6ff;
+        border: 1px solid #bfdbfe;
+        padding: 5px 12px;
+        border-radius: 8px;
+        display: inline-block;
+    }
+
+        .forou-action-link:hover {
+            color: #1e3a8a;
+            background: #dbeafe;
+            text-decoration: none;
+        }
+
+    .forou-btn-create {
+        display: inline-block;
+        background: linear-gradient(90deg, #1a3570 0%, #1e4db7 100%);
+        color: #fff;
+        text-decoration: none;
+        padding: 10px 20px;
+        border-radius: 10px;
+        font-weight: 700;
+        font-size: 14px;
+        box-shadow: 0 4px 12px rgba(30,77,183,0.22);
+    }
+
+        .forou-btn-create:hover {
+            color: #fff;
+            text-decoration: none;
+            opacity: 0.92;
+        }
+
+    .forou-empty {
+        color: #6b7f9e;
+        font-size: 14px;
+        padding: 30px 20px;
+        text-align: center;
+    }
+
+    .forou-success {
+        background: #f0fdf4;
+        border: 1px solid #bbf7d0;
+        color: #166534;
+        border-radius: 12px;
+        padding: 14px 18px;
+        margin-bottom: 18px;
+    }
+
+    .forou-desc-cell {
+        color: #64748b;
+        font-size: 13px;
+        max-width: 300px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .forou-search-row {
+        display: flex; align-items: flex-end; gap: 16px; flex-wrap: wrap; margin-bottom: 20px;
+    }
+
+    .forou-search-form {
+        display: flex; align-items: flex-end; gap: 10px; flex-wrap: wrap;
+    }
+
+    .forou-search-group { display: flex; flex-direction: column; gap: 5px; }
+
+    .forou-search-label {
+        font-size: 12px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.04em;
+    }
+
+    .forou-search-input {
+        height: 40px; border-radius: 9px;
+        border: 1.5px solid #e2e8f0; background: #f8fafc;
+        padding: 0 14px; font-size: 14px;
+        font-family: inherit; color: #1e293b; min-width: 220px;
+        transition: border-color 0.2s;
+    }
+    .forou-search-input:focus { outline: none; border-color: #6366f1; background: #fff; }
+
+    .forou-search-select {
+        height: 40px; border-radius: 9px;
+        border: 1.5px solid #e2e8f0; background: #f8fafc;
+        padding: 0 14px; font-size: 14px;
+        font-family: inherit; color: #1e293b;
+        transition: border-color 0.2s;
+    }
+    .forou-search-select:focus { outline: none; border-color: #6366f1; background: #fff; }
+
+    .forou-search-btn {
+        height: 40px; padding: 0 18px; border-radius: 9px;
+        background: #6366f1; color: #fff; border: none;
+        font-weight: 700; font-size: 14px; font-family: inherit; cursor: pointer;
+        transition: opacity 0.15s;
+    }
+    .forou-search-btn:hover { opacity: 0.9; }
+
+    .forou-clear-link {
+        height: 40px; padding: 0 16px; border-radius: 9px;
+        border: 1.5px solid #e2e8f0; background: #f8fafc;
+        color: #64748b; font-size: 14px; font-weight: 600;
+        display: inline-flex; align-items: center; text-decoration: none;
+        transition: all 0.15s;
+    }
+    .forou-clear-link:hover { border-color: #c4b5fd; color: #6366f1; text-decoration: none; background: #f5f3ff; }
+
+    .forou-no-results {
+        padding: 28px 18px; text-align: center; color: #94a3b8; font-size: 14px;
+    }
+</style>
+
+@{
+    var currentCriteria = ViewBag.CurrentCriteria as string ?? "";
+    var currentField    = ViewBag.CurrentField    as string ?? "Todos";
+    var fieldOptions    = ViewBag.FieldOptions    as List<SelectListItem>;
+}
+
+<div class="forou-breadcrumb">
+    <span class="forou-breadcrumb-current">Cursos</span>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="forou-success">@TempData["Success"]</div>
+}
+
+<div class="forou-admin-header">
+    <div class="forou-admin-title">Cursos</div>
+    <a class="forou-btn-create" href="@Url.Action("Create", "Curso")">+ Nuevo curso</a>
+</div>
+
+<div class="forou-search-row">
+    @using (Html.BeginForm("Search", "Curso", FormMethod.Post, new { @class = "forou-search-form" }))
+    {
+        @Html.AntiForgeryToken()
+        <div class="forou-search-group">
+            <label class="forou-search-label">Buscar</label>
+            @Html.TextBox("criteria", currentCriteria, new { @class = "forou-search-input", placeholder = "Texto a buscar..." })
+        </div>
+        <div class="forou-search-group">
+            <label class="forou-search-label">Campo</label>
+            @Html.DropDownList("field", new SelectList(fieldOptions, "Value", "Text", currentField), new { @class = "forou-search-select" })
+        </div>
+        <button type="submit" class="forou-search-btn">Buscar</button>
+        @Html.ActionLink("Limpiar", "Index", "Curso", null, new { @class = "forou-clear-link" })
+    }
+</div>
+
+<div class="forou-table-card">
+    @if (Model != null && Model.Count > 0)
+    {
+        <table class="forou-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Nombre</th>
+                    <th>Descripci&oacute;n</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{ int rowNum = 1; }
+                @foreach (var c in Model)
+                {
+                    <tr>
+                        <td style="color:#1e293b; font-weight:700;">@rowNum</td>
+                        @{ rowNum++; }
+                        <td style="color:#1e293b; font-weight:700;">@c.Name</td>
+                        <td class="forou-desc-cell">@(c.Description ?? "—")</td>
+                        <td>
+                            <a class="forou-action-link" href="@Url.Action("Edit", "Curso", new { id = c.CourseId })">Editar</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <div class="forou-no-results">No se encontraron cursos para la b&uacute;squeda realizada.</div>
+    }
+</div>

@@ -1,32 +1,27 @@
 @{
-    ViewBag.Title = "Login - ForoU";
     Layout = "~/Views/Shared/_LayoutLogin.cshtml";
+    ViewBag.Title = "Iniciar sesi&oacute;n";
 }
 
-<div class="forou-form-title">Iniciar sesión</div>
-<div class="forou-form-subtitle">Entrá con tu cuenta para usar el foro.</div>
+<div class="login-form-header">
+    <div class="login-form-title">Bienvenido de vuelta</div>
+    <div class="login-form-subtitle">Ingres&aacute; con tu cuenta para continuar</div>
+</div>
 
 @if (ViewBag.Error != null)
 {
-    <div class="forou-alert">@ViewBag.Error</div>
+    <div class="login-alert">@ViewBag.Error</div>
 }
 
 @using (Html.BeginForm("Login", "Access", FormMethod.Post))
 {
     @Html.AntiForgeryToken()
 
-    <label class="forou-form-label">Correo</label>
-    <input class="forou-input" type="email" name="email" placeholder="usuario@correo.com" required />
+    <label class="login-label">Correo electr&oacute;nico</label>
+    <input type="text" name="email" class="login-input" />
 
-    <label class="forou-form-label">Contraseña</label>
-    <input class="forou-input" type="password" name="password" placeholder="••••••••" required />
+    <label class="login-label">Contrase&ntilde;a</label>
+    <input type="password" name="password" class="login-input" />
 
-    <button class="forou-btn-primary" type="submit">Entrar</button>
+    <button type="submit" class="login-btn">Iniciar sesi&oacute;n</button>
 }
-
-<div style="margin-top:18px; color:#55607a; font-size:14px; line-height:1.6;">
-    <strong>Usuarios de prueba:</strong><br />
-    Administrador: chrisbeita@ufide.ac.cr / 123456<br />
-    Estudiante: estudiante@ForoU.com / 123456<br />
-    Profesor: profesor@ForoU.com / 123456
-</div>

@@ -6,11 +6,10 @@ namespace AP.Models
     public class Assignment
     {
         public int AssignmentId { get; set; }
+        public int ProfessorId { get; set; }
 
-        [Required(ErrorMessage = "La categoría es obligatoria.")]
-        public int CategoryId { get; set; }
-
-        public int TeacherId { get; set; }
+        [Required(ErrorMessage = "La clase es obligatoria.")]
+        public int ClassId { get; set; }
 
         [Required(ErrorMessage = "El título es obligatorio.")]
         [StringLength(150, ErrorMessage = "El título no puede superar los 150 caracteres.")]
@@ -23,7 +22,7 @@ namespace AP.Models
         [DataType(DataType.Date)]
         public DateTime DueDate { get; set; }
 
-        public string CategoryName { get; set; }
-        public string TeacherName { get; set; }
+        public string ClassName { get; set; }
+        public DateTime CreatedAt { get; set; }
     }
 }
