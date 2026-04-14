@@ -4,6 +4,7 @@ using AP.Business;
 namespace AP.MVC.Controllers
 {
     // Muestra las notificaciones del usuario y las marca como leidas al entrar
+    // SOLID: SRP - este controller solo maneja lo de notificaciones
     public class NotificationController : Controller
     {
         private readonly NotificationBusiness _biz = new NotificationBusiness();

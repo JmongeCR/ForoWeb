@@ -79,7 +79,7 @@ namespace AP.MVC.Controllers
 
             int newId = _biz.Create(assignment);
 
-            // Notifica a cada estudiante inscrito en la clase
+            // DP: Observer - al publicar una tarea, notificamos a todos los estudiantes de la clase
             var students = _biz.GetAssignedStudents(newId);
             foreach (var s in students)
             {
@@ -159,7 +159,7 @@ namespace AP.MVC.Controllers
                 Comment      = comment
             });
 
-            // Notifica al profesor que un estudiante entrego la tarea
+            // DP: Observer - cuando el estudiante entrega, notificamos al profesor
             var assignment = _biz.GetById(assignmentId);
             if (assignment != null)
             {

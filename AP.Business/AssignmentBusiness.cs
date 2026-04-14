@@ -4,6 +4,9 @@ using System.Collections.Generic;
 
 namespace AP.Business
 {
+    // DP: Facade - coordina AssignmentRepository, SubmissionRepository y ClaseRepository
+    // el controller le habla solo a esta clase sin saber cuantos repos hay detras
+    // SOLID: DIP - el controller depende de esta capa y no de los repos directamente
     public class AssignmentBusiness
     {
         private readonly AssignmentRepository _assignRepo = new AssignmentRepository();

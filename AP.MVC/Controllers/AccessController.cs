@@ -4,9 +4,8 @@ using AP.Business;
 
 namespace AP.MVC.Controllers
 {
-    // Este controller solo maneja el login y logout, nada mas
-    // Usamos UserBusiness en lugar de ir directo al repositorio
-    // para respetar la separacion de capas (principio DIP)
+    // SOLID: SRP - este controller solo se encarga del login y logout, nada mas
+    // SOLID: DIP - usamos UserBusiness en vez del repositorio directamente
     public class AccessController : Controller
     {
         private readonly UserBusiness _userBusiness = new UserBusiness();

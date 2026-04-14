@@ -7,6 +7,8 @@ namespace AP.Data
 {
     // Accede directamente a la tabla Notifications con ADO.NET
     // igual que todos los otros repositorios del proyecto
+    // DP: Repository - igual que los otros repos, aca va todo lo de la tabla Notifications
+    // SOLID: SRP - solo se encarga de leer y escribir notificaciones, nada mas
     public class NotificationRepository
     {
         private readonly DataProvider _db = new DataProvider();

@@ -5,6 +5,8 @@ using AP.Models;
 
 namespace AP.Business
 {
+    // DP: Facade - agrupa en un solo lugar las operaciones de hilos, respuestas y categorias
+    // SOLID: DIP - los controllers dependen de esta clase y no de los repositorios directamente
     public class ThreadBusiness
     {
         private readonly ThreadRepository _threadRepo = new ThreadRepository();

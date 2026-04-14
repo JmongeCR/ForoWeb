@@ -28,7 +28,8 @@ namespace AP.MVC.Controllers
                 Message  = message.Trim()
             });
 
-            // Notifica al autor del hilo si no es el mismo que responde
+            // DP: Observer - el autor del hilo es el observador, cuando alguien responde lo notificamos
+            // solo si quien responde es distinto al autor para no notificarse a si mismo
             var thread = _threadBiz.GetThread(threadId);
             if (thread != null && thread.UserId != currentUserId)
             {

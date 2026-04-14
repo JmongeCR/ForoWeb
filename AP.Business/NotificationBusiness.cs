@@ -6,6 +6,8 @@ namespace AP.Business
 {
     // Capa intermedia entre el controller y el repositorio
     // siguiendo el mismo patron que el resto del proyecto
+    // SOLID: SRP - esta clase solo se encarga de la logica de notificaciones
+    // SOLID: DIP - quien necesite notificar depende de esta clase y no del repo
     public class NotificationBusiness
     {
         private readonly NotificationRepository _repo = new NotificationRepository();

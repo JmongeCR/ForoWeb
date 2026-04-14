@@ -5,6 +5,8 @@ using System.Data.SqlClient;
 
 namespace AP.Data
 {
+    // DP: Repository - concentramos todo lo de la tabla Users en un solo lugar
+    // SOLID: SRP - esta clase tiene una sola razon para cambiar: si cambia algo en los datos de usuarios
     public class UserRepository
     {
         private readonly DataProvider _db = new DataProvider();

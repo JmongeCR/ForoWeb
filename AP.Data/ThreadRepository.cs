@@ -5,6 +5,8 @@ using AP.Models;
 
 namespace AP.Data
 {
+    // DP: Repository - toda la logica de acceso a la tabla Threads queda aqui
+    // asi el resto del proyecto no tiene que saber nada de SQL
     public class ThreadRepository
     {
         private readonly DataProvider _db = new DataProvider();
@@ -120,6 +122,8 @@ namespace AP.Data
             }
         }
 
+        // DP: algo parecido a Factory Method - mapeamos el DataReader una sola vez
+        // para no repetir ese codigo en cada metodo que hace un SELECT
         private Thread MapThread(SqlDataReader dr)
         {
             return new Thread

@@ -6,9 +6,8 @@ using AP.MVC.Models;
 
 namespace AP.MVC.Controllers
 {
-    // Maneja las vistas del foro: listar hilos de una categoria, ver uno y crear nuevos
-    // Se comunica con ThreadBusiness y no con el repositorio directamente
-    // asi respetamos que cada capa hable solo con la que tiene abajo
+    // SOLID: SRP - este controller solo se ocupa de las vistas del foro
+    // SOLID: DIP - se comunica con ThreadBusiness y no con los repos directamente
     public class ThreadController : Controller
     {
         private readonly ThreadBusiness _biz = new ThreadBusiness();

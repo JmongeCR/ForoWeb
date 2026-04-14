@@ -8,9 +8,9 @@ using System.Collections.Generic;
 
 namespace AP.MVC.Controllers
 {
-    // Controller del perfil - solo muestra y actualiza los datos del usuario logueado
-    // Separe la logica de la foto en un metodo aparte (UpdatePhoto)
-    // para no mezclar todo en el Index y mantenerlo mas ordenado
+    // SOLID: SRP - separamos ver el perfil (Index) de actualizar la foto (UpdatePhoto)
+    // para que cada metodo tenga una sola responsabilidad
+    // SOLID: DIP - usamos UserBusiness y ClaseBusiness, no los repos directamente
     public class ProfiledController : Controller
     {
         private readonly UserBusiness _userBusiness = new UserBusiness();
