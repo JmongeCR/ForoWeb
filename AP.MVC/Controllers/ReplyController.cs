@@ -9,6 +9,8 @@ namespace AP.MVC.Controllers
     public class ReplyController : Controller
     {
         private readonly ReplyBusiness _biz = new ReplyBusiness();
+        private readonly ThreadBusiness _threadBiz = new ThreadBusiness();
+        private readonly NotificationBusiness _notifBiz = new NotificationBusiness();
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -17,12 +19,26 @@ namespace AP.MVC.Controllers
             if (threadId <= 0 || string.IsNullOrWhiteSpace(message))
                 return RedirectToAction("Details", "Thread", new { id = threadId });
 
+            int currentUserId = (int)Session["UserId"];
+
             _biz.CreateReply(new Reply
             {
                 ThreadId = threadId,
-                UserId = (int)Session["UserId"],
-                Message = message.Trim()
+                UserId   = currentUserId,
+                Message  = message.Trim()
             });
+
+            // Notifica al autor del hilo si no es el mismo que responde
+            var thread = _threadBiz.GetThread(threadId);
+            if (thread != null && thread.UserId != currentUserId)
+            {
+                string autor = Session["UserName"]?.ToString() ?? "Alguien";
+                _notifBiz.Notify(
+                    thread.UserId,
+                    $"{autor} respondio tu hilo: {thread.Title}",
+                    $"/Thread/Details/{threadId}"
+                );
+            }
 
             return RedirectToAction("Details", "Thread", new { id = threadId });
         }

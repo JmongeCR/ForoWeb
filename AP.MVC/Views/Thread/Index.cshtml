@@ -85,6 +85,14 @@
 
     .canal-thread-meta { color: #94a3b8; font-size: 12px; }
 
+    .canal-closed-badge {
+        display: inline-flex; align-items: center; gap: 4px;
+        background: #fef2f2; border: 1px solid #fecaca;
+        color: #dc2626; font-size: 11px; font-weight: 700;
+        padding: 2px 8px; border-radius: 999px;
+        margin-left: 8px;
+    }
+
     .canal-thread-action {
         display: inline-flex; align-items: center; gap: 5px;
         background: #f5f3ff; color: #6366f1; border: 1px solid #ddd6fe;
@@ -136,7 +144,13 @@ else
             <div class="canal-thread">
                 <div class="canal-thread-icon">&#x1F4AC;</div>
                 <div class="canal-thread-body">
-                    <div class="canal-thread-title">@t.Title</div>
+                    <div class="canal-thread-title">
+                        @t.Title
+                        @if (t.IsClosed)
+                        {
+                            <span class="canal-closed-badge">&#x1F512; Cerrado</span>
+                        }
+                    </div>
                     <div class="canal-thread-preview">@t.Message</div>
                     <div class="canal-thread-meta">@t.CreatedAt.ToString("dd/MM/yyyy") &middot; @t.CreatedAt.ToString("HH:mm")</div>
                 </div>

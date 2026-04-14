@@ -11,6 +11,7 @@ namespace AP.MVC.Controllers
     public class AssignmentController : Controller
     {
         private readonly AssignmentBusiness _biz = new AssignmentBusiness();
+        private readonly NotificationBusiness _notifBiz = new NotificationBusiness();
 
         private bool IsLoggedIn() => Session["UserId"] != null;
         private bool IsProfesor() => Session["UserRole"]?.ToString() == "Profesor";
@@ -77,6 +78,18 @@ namespace AP.MVC.Controllers
             };
 
             int newId = _biz.Create(assignment);
+
+            // Notifica a cada estudiante inscrito en la clase
+            var students = _biz.GetAssignedStudents(newId);
+            foreach (var s in students)
+            {
+                _notifBiz.Notify(
+                    s.UserId,
+                    $"Nueva tarea: {assignment.Title}",
+                    $"/Assignment/Details/{newId}"
+                );
+            }
+
             TempData["Success"] = "Tarea creada exitosamente.";
             return RedirectToAction("Details", new { id = newId });
         }
@@ -145,6 +158,18 @@ namespace AP.MVC.Controllers
                 FileUrl      = fileUrl,
                 Comment      = comment
             });
+
+            // Notifica al profesor que un estudiante entrego la tarea
+            var assignment = _biz.GetById(assignmentId);
+            if (assignment != null)
+            {
+                string studentName = Session["UserName"]?.ToString() ?? "Un estudiante";
+                _notifBiz.Notify(
+                    assignment.ProfessorId,
+                    $"{studentName} entrego la tarea: {assignment.Title}",
+                    $"/Assignment/Details/{assignmentId}"
+                );
+            }
 
             TempData["Success"] = "Tu entrega fue registrada correctamente.";
             return RedirectToAction("Details", new { id = assignmentId });

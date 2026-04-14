@@ -47,7 +47,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   <Compile Include="AssignmentBusiness.cs" />
     <Compile Include="CourseBusiness.cs" />
-    <Compile Include="ClaseBusiness.cs" /></ItemGroup>
+    <Compile Include="ClaseBusiness.cs" />
+    <Compile Include="NotificationBusiness.cs" /></ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AP.Data\AP.Data.csproj">
       <Project>{9cec44ee-3014-4767-9b4f-4d0a67dedd4d}</Project>

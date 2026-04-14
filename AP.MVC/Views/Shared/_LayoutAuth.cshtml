@@ -80,6 +80,22 @@
         }
         .fu-logout-btn:hover { background: rgba(255,255,255,0.12); color: #fff; text-decoration: none; }
 
+        .fu-bell-btn {
+            position: relative; display: flex; align-items: center; justify-content: center;
+            width: 34px; height: 34px; border-radius: 7px;
+            background: transparent; border: 1px solid rgba(255,255,255,0.2);
+            color: rgba(255,255,255,0.8); text-decoration: none; font-size: 16px;
+            transition: all 0.15s;
+        }
+        .fu-bell-btn:hover { background: rgba(255,255,255,0.12); color: #fff; text-decoration: none; }
+        .fu-bell-count {
+            position: absolute; top: -5px; right: -5px;
+            background: #ef4444; color: #fff; font-size: 10px; font-weight: 800;
+            min-width: 17px; height: 17px; border-radius: 999px;
+            display: flex; align-items: center; justify-content: center; padding: 0 3px;
+            border: 1.5px solid #6366f1;
+        }
+
         .fu-content { padding: 28px 36px; min-height: calc(100vh - 60px - 44px); }
         .fu-content-inner { max-width: 1400px; margin: 0 auto; }
 
@@ -168,6 +184,7 @@
                 <a class="fu-nav-link" data-controller="assignment" href="@Url.Action("Index", "Assignment")">Tareas</a>
             }
             <a class="fu-nav-link" data-controller="profiled" href="@Url.Action("Index", "Profiled")">Mi perfil</a>
+            <a class="fu-nav-link" data-controller="notification" href="@Url.Action("Index", "Notification")">Notificaciones</a>
             @if (userRole == "Administrador")
             {
                 <div class="fu-nav-sep"></div>
@@ -180,6 +197,7 @@
 
         <div class="fu-topbar-right">
             <span class="fu-role-badge">@userRole</span>
+            @Html.Action("BellBadge", "Notification")
             <a class="fu-user-pill" href="@Url.Action("Index", "Profiled")">
                 <div class="fu-user-avatar">@(userName.Length > 0 ? userName[0].ToString().ToUpper() : "U")</div>
                 <span>@userName</span>

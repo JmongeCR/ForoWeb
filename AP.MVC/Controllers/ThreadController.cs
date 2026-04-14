@@ -6,10 +6,9 @@ using AP.MVC.Models;
 
 namespace AP.MVC.Controllers
 {
-    // SOLID: Single Responsibility Principle (SRP) - maneja unicamente las acciones HTTP
-    //        del foro: listar hilos por categoria, crear hilo y ver detalle con respuestas.
-    // SOLID: Dependency Inversion Principle (DIP) - depende de ThreadBusiness (abstraccion),
-    //        no de repositorios concretos.
+    // Maneja las vistas del foro: listar hilos de una categoria, ver uno y crear nuevos
+    // Se comunica con ThreadBusiness y no con el repositorio directamente
+    // asi respetamos que cada capa hable solo con la que tiene abajo
     public class ThreadController : Controller
     {
         private readonly ThreadBusiness _biz = new ThreadBusiness();
@@ -58,6 +57,32 @@ namespace AP.MVC.Controllers
             };
 
             return View(model);
+        }
+
+        // POST: Thread/Close/5  (solo Administrador)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Close(int id)
+        {
+            var role = Session["UserRole"]?.ToString();
+            if (role != "Administrador")
+                return new HttpStatusCodeResult(System.Net.HttpStatusCode.Forbidden);
+
+            _biz.SetClosed(id, true);
+            return RedirectToAction("Details", new { id });
+        }
+
+        // POST: Thread/Reopen/5  (solo Administrador)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Reopen(int id)
+        {
+            var role = Session["UserRole"]?.ToString();
+            if (role != "Administrador")
+                return new HttpStatusCodeResult(System.Net.HttpStatusCode.Forbidden);
+
+            _biz.SetClosed(id, false);
+            return RedirectToAction("Details", new { id });
         }
 
         // POST: Thread/Create

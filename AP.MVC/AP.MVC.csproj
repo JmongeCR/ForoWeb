@@ -133,7 +133,8 @@
     <Compile Include="Models\AssignmentDetailsVM.cs" />
     <Compile Include="Models\CreateAssignmentVM.cs" />
     <Compile Include="Models\ClaseDetailsVM.cs" />
-    <Compile Include="Models\CreateClaseVM.cs" /></ItemGroup>
+    <Compile Include="Models\CreateClaseVM.cs" />
+    <Compile Include="Controllers\NotificationController.cs" /></ItemGroup>
   <ItemGroup>
     <Content Include="bin\Antlr3.Runtime.dll" />
     <Content Include="bin\Antlr3.Runtime.pdb" />
@@ -281,7 +282,9 @@
     <Content Include="Views\Clase\Details.cshtml" />
     <Content Include="Views\Curso\Index.cshtml" />
     <Content Include="Views\Curso\Create.cshtml" />
-    <Content Include="Views\Curso\Edit.cshtml" /></ItemGroup>
+    <Content Include="Views\Curso\Edit.cshtml" />
+    <Content Include="Views\Notification\Index.cshtml" />
+    <Content Include="Views\Notification\_BellBadge.cshtml" /></ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
   </ItemGroup>

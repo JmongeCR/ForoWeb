@@ -50,6 +50,7 @@
   <Compile Include="Assignment.cs" />
     <Compile Include="Course.cs" />
     <Compile Include="Clase.cs" />
-    <Compile Include="Submission.cs" /></ItemGroup>
+    <Compile Include="Submission.cs" />
+    <Compile Include="Notification.cs" /></ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

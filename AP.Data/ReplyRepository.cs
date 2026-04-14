@@ -36,7 +36,8 @@ namespace AP.Data
                             UserId = Convert.ToInt32(dr["UserId"]),
                             Message = dr["Message"].ToString(),
                             CreatedAt = Convert.ToDateTime(dr["CreatedAt"]),
-                            UserName = dr["UserName"].ToString()
+                            UserName = dr["UserName"].ToString(),
+                            AuthorName = dr["UserName"].ToString()
                         });
                     }
                 }

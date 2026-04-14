@@ -51,9 +51,52 @@
     .forou-profile-label { color: #6366f1; font-weight: 700; font-size: 14px; }
     .forou-profile-value { color: #1e293b; font-size: 14px; }
 
+    /* Sección clases */
+    .forou-classes-card {
+        background: #fff; border: 1px solid #e2e8f0;
+        border-radius: 20px; padding: 28px 32px;
+        box-shadow: 0 2px 8px rgba(99,102,241,0.07);
+        margin-top: 20px;
+    }
+
+    .forou-classes-title {
+        font-size: 18px; font-weight: 800; color: #1e293b;
+        margin: 0 0 18px 0; display: flex; align-items: center; gap: 10px;
+    }
+
+    .forou-classes-grid {
+        display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 14px;
+    }
+
+    .forou-class-item {
+        background: #f8fafc; border: 1px solid #e2e8f0;
+        border-radius: 12px; padding: 16px 18px;
+        display: flex; flex-direction: column; gap: 6px;
+        transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .forou-class-item:hover {
+        border-color: #a5b4fc;
+        box-shadow: 0 4px 12px rgba(99,102,241,0.1);
+    }
+
+    .forou-class-name { font-size: 14px; font-weight: 700; color: #1e293b; }
+    .forou-class-course {
+        display: inline-block; font-size: 11px; font-weight: 700;
+        background: #ede9fe; color: #6366f1;
+        padding: 2px 9px; border-radius: 999px;
+        align-self: flex-start;
+    }
+    .forou-class-prof { font-size: 12px; color: #94a3b8; }
+
+    .forou-classes-empty {
+        color: #94a3b8; font-size: 14px; text-align: center; padding: 24px 0;
+    }
+
     @@media (max-width: 640px) {
         .forou-profile-card { flex-direction: column; align-items: center; }
         .forou-profile-grid { grid-template-columns: 1fr; }
+        .forou-classes-grid { grid-template-columns: 1fr; }
     }
 </style>
 
@@ -101,6 +144,57 @@
 
     </div>
 </div>
+
+@* Sección de clases (Estudiante / Profesor) *@
+@if (Model.Role != "Administrador")
+{
+    <div class="forou-profile-wrap">
+        <div class="forou-classes-card">
+            <h2 class="forou-classes-title">
+                @if (Model.Role == "Estudiante")
+                {
+                    <span>&#x1F393;</span>
+                    <span>Mis clases inscritas</span>
+                }
+                else
+                {
+                    <span>&#x1F4DA;</span>
+                    <span>Mis clases asignadas</span>
+                }
+            </h2>
+
+            @if (Model.Clases != null && Model.Clases.Count > 0)
+            {
+                <div class="forou-classes-grid">
+                    @foreach (var c in Model.Clases)
+                    {
+                        <div class="forou-class-item">
+                            <div class="forou-class-name">@c.Name</div>
+                            <span class="forou-class-course">@c.CourseName</span>
+                            @if (Model.Role == "Estudiante")
+                            {
+                                <div class="forou-class-prof">Profesor: @c.ProfessorName</div>
+                            }
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="forou-classes-empty">
+                    @if (Model.Role == "Estudiante")
+                    {
+                        <text>No est&aacute;s inscrito en ninguna clase todav&iacute;a.</text>
+                    }
+                    else
+                    {
+                        <text>No ten&eacute;s clases asignadas todav&iacute;a.</text>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+}
 
 @section scripts {
 <script>

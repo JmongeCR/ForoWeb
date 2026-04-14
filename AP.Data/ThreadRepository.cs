@@ -15,7 +15,7 @@ namespace AP.Data
 
             using (SqlConnection cn = _db.GetConnection())
             using (SqlCommand cmd = new SqlCommand(@"
-                SELECT t.ThreadId, t.CategoryId, t.UserId, t.Title, t.Message, t.CreatedAt,
+                SELECT t.ThreadId, t.CategoryId, t.UserId, t.Title, t.Message, t.CreatedAt, t.IsClosed,
                        u.FullName AS UserName
                 FROM Threads t
                 INNER JOIN Users u ON u.UserId = t.UserId
@@ -40,7 +40,7 @@ namespace AP.Data
 
             using (SqlConnection cn = _db.GetConnection())
             using (SqlCommand cmd = new SqlCommand(@"
-                SELECT t.ThreadId, t.CategoryId, t.UserId, t.Title, t.Message, t.CreatedAt,
+                SELECT t.ThreadId, t.CategoryId, t.UserId, t.Title, t.Message, t.CreatedAt, t.IsClosed,
                        u.FullName AS UserName
                 FROM Threads t
                 INNER JOIN Users u ON u.UserId = t.UserId
@@ -68,7 +68,7 @@ namespace AP.Data
 
             using (SqlConnection cn = _db.GetConnection())
             using (SqlCommand cmd = new SqlCommand(@"
-                SELECT t.ThreadId, t.CategoryId, t.UserId, t.Title, t.Message, t.CreatedAt,
+                SELECT t.ThreadId, t.CategoryId, t.UserId, t.Title, t.Message, t.CreatedAt, t.IsClosed,
                        u.FullName AS UserName
                 FROM Threads t
                 INNER JOIN Users u ON u.UserId = t.UserId
@@ -107,17 +107,31 @@ namespace AP.Data
             }
         }
 
+        public void SetClosed(int threadId, bool closed)
+        {
+            using (SqlConnection cn = _db.GetConnection())
+            using (SqlCommand cmd = new SqlCommand(
+                "UPDATE Threads SET IsClosed = @closed WHERE ThreadId = @id", cn))
+            {
+                cmd.Parameters.AddWithValue("@closed", closed ? 1 : 0);
+                cmd.Parameters.AddWithValue("@id", threadId);
+                cn.Open();
+                cmd.ExecuteNonQuery();
+            }
+        }
+
         private Thread MapThread(SqlDataReader dr)
         {
             return new Thread
             {
-                ThreadId = Convert.ToInt32(dr["ThreadId"]),
+                ThreadId   = Convert.ToInt32(dr["ThreadId"]),
                 CategoryId = Convert.ToInt32(dr["CategoryId"]),
-                UserId = Convert.ToInt32(dr["UserId"]),
-                Title = dr["Title"].ToString(),
-                Message = dr["Message"].ToString(),
-                CreatedAt = Convert.ToDateTime(dr["CreatedAt"]),
-                UserName = dr["UserName"].ToString()
+                UserId     = Convert.ToInt32(dr["UserId"]),
+                Title      = dr["Title"].ToString(),
+                Message    = dr["Message"].ToString(),
+                CreatedAt  = Convert.ToDateTime(dr["CreatedAt"]),
+                UserName   = dr["UserName"].ToString(),
+                IsClosed   = Convert.ToBoolean(dr["IsClosed"])
             };
         }
     }

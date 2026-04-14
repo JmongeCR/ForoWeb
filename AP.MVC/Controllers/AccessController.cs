@@ -4,10 +4,9 @@ using AP.Business;
 
 namespace AP.MVC.Controllers
 {
-    // SOLID: Single Responsibility Principle (SRP) - unica responsabilidad: manejar
-    //        autenticacion (login/logout) y gestion de sesion del usuario.
-    // SOLID: Dependency Inversion Principle (DIP) - depende de UserBusiness (capa de negocio),
-    //        no de repositorios o SQL directamente.
+    // Este controller solo maneja el login y logout, nada mas
+    // Usamos UserBusiness en lugar de ir directo al repositorio
+    // para respetar la separacion de capas (principio DIP)
     public class AccessController : Controller
     {
         private readonly UserBusiness _userBusiness = new UserBusiness();

@@ -51,7 +51,8 @@
   <Compile Include="AssignmentRepository.cs" />
     <Compile Include="CourseRepository.cs" />
     <Compile Include="ClaseRepository.cs" />
-    <Compile Include="SubmissionRepository.cs" /></ItemGroup>
+    <Compile Include="SubmissionRepository.cs" />
+    <Compile Include="NotificationRepository.cs" /></ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AP.Models\AP.Models.csproj">
       <Project>{e5241884-31ad-4da4-8e67-ae5af9592d1a}</Project>

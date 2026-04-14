@@ -27,6 +27,8 @@ namespace AP.Business
             return _threadRepo.GetThreadsByCategory(categoryId);
         }
 
+        public void SetClosed(int threadId, bool closed) => _threadRepo.SetClosed(threadId, closed);
+
         public string GetCategoryName(int categoryId)
         {
             var cat = _categoryRepo.GetAll().Find(c => c.CategoryId == categoryId);

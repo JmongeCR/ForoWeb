@@ -4,16 +4,17 @@ using System.Web.Mvc;
 using AP.Business;
 using AP.Models;
 using AP.MVC.Models;
+using System.Collections.Generic;
 
 namespace AP.MVC.Controllers
 {
-    // SOLID: Single Responsibility Principle (SRP) - gestiona unicamente el perfil del usuario
-    //        autenticado: visualizacion y actualizacion de foto de avatar.
-    // DP: Strategy Pattern (implicito) - la logica de guardado de imagen esta encapsulada
-    //     en UpdatePhoto, separada de la logica de visualizacion en Index.
+    // Controller del perfil - solo muestra y actualiza los datos del usuario logueado
+    // Separe la logica de la foto en un metodo aparte (UpdatePhoto)
+    // para no mezclar todo en el Index y mantenerlo mas ordenado
     public class ProfiledController : Controller
     {
         private readonly UserBusiness _userBusiness = new UserBusiness();
+        private readonly ClaseBusiness _claseBusiness = new ClaseBusiness();
 
         public ActionResult Index()
         {
@@ -26,6 +27,14 @@ namespace AP.MVC.Controllers
             if (user == null)
                 return RedirectToAction("Login", "Access");
 
+            List<Clase> clases;
+            if (user.Role == "Estudiante")
+                clases = _claseBusiness.GetByStudent(userId);
+            else if (user.Role == "Profesor")
+                clases = _claseBusiness.GetByProfessor(userId);
+            else
+                clases = new List<Clase>();
+
             var vm = new ProfileVM
             {
                 UserId   = user.UserId,
@@ -34,7 +43,8 @@ namespace AP.MVC.Controllers
                 Role     = user.Role,
                 PhotoUrl = string.IsNullOrWhiteSpace(user.PhotoUrl)
                     ? "~/Content/img/default-avatar.png"
-                    : user.PhotoUrl
+                    : user.PhotoUrl,
+                Clases   = clases
             };
 
             return View(vm);

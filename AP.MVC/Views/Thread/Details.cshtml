@@ -2,28 +2,170 @@
 
 @{
     ViewBag.Title = Model.Thread != null ? Model.Thread.Title : "Detalle";
+    int replyCount = Model.Replies != null ? Model.Replies.Count : 0;
+    bool isClosed = Model.Thread.IsClosed;
+    bool isAdmin  = Session["UserRole"] != null && Session["UserRole"].ToString() == "Administrador";
 }
 
 <style>
-    .forou-detail-wrap { display: flex; flex-direction: column; gap: 20px; }
+    .forou-detail-wrap { max-width: 860px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
 
-    .forou-thread-title { font-size: 24px; font-weight: 800; color: #1e293b; margin-bottom: 10px; }
-    .forou-thread-message { color: #475569; font-size: 16px; line-height: 1.7; margin-bottom: 12px; }
-    .forou-thread-meta { color: #94a3b8; font-size: 13px; }
+    /* Tarjeta principal del hilo */
+    .forou-thread-card {
+        background: #fff; border: 1px solid #e2e8f4;
+        border-radius: 16px; padding: 28px 32px;
+        box-shadow: 0 2px 10px rgba(26,53,112,0.07);
+    }
 
+    .forou-thread-title {
+        font-size: 24px; font-weight: 800; color: #1a3570;
+        margin: 0 0 12px 0; line-height: 1.3;
+    }
+
+    .forou-thread-message {
+        color: #475569; font-size: 15px; line-height: 1.75;
+        margin-bottom: 16px; white-space: pre-wrap;
+    }
+
+    .forou-thread-meta {
+        display: flex; align-items: center; gap: 8px;
+        color: #94a3b8; font-size: 13px;
+        padding-top: 14px; border-top: 1px solid #f1f5f9;
+    }
+
+    .forou-thread-meta svg { flex-shrink: 0; }
+
+    /* Seccion respuestas */
+    .forou-section-card {
+        background: #fff; border: 1px solid #e2e8f4;
+        border-radius: 16px; padding: 24px 32px;
+        box-shadow: 0 2px 10px rgba(26,53,112,0.07);
+    }
+
+    .forou-section-header {
+        display: flex; align-items: center; gap: 10px;
+        margin-bottom: 20px;
+    }
+
+    .forou-section-title {
+        font-size: 18px; font-weight: 800; color: #1a3570; margin: 0;
+    }
+
+    .forou-reply-count {
+        background: #ede9fe; color: #6366f1;
+        font-size: 12px; font-weight: 700;
+        padding: 2px 9px; border-radius: 999px;
+    }
+
+    /* Tarjeta de respuesta individual */
     .forou-replies-list { display: flex; flex-direction: column; gap: 12px; }
 
     .forou-reply-card {
         background: #f8fafc; border: 1px solid #e2e8f0;
-        border-radius: 12px; padding: 16px;
+        border-radius: 12px; padding: 16px 20px;
+        display: flex; gap: 14px; align-items: flex-start;
     }
 
-    .forou-reply-message { color: #1e293b; font-size: 15px; line-height: 1.6; margin-bottom: 8px; }
-    .forou-reply-meta { color: #94a3b8; font-size: 13px; }
+    .forou-reply-avatar {
+        width: 38px; height: 38px; border-radius: 50%; flex-shrink: 0;
+        background: linear-gradient(135deg, #6366f1, #818cf8);
+        color: #fff; font-weight: 800; font-size: 15px;
+        display: flex; align-items: center; justify-content: center;
+    }
 
-    .forou-form-label { display: block; color: #475569; font-weight: 700; margin-bottom: 8px; font-size: 14px; }
+    .forou-reply-body { flex: 1; }
 
-    .forou-btn-row { display: flex; gap: 10px; flex-wrap: wrap; }
+    .forou-reply-author {
+        font-size: 13px; font-weight: 700; color: #1e293b; margin-bottom: 6px;
+    }
+
+    .forou-reply-author span {
+        color: #94a3b8; font-weight: 400; margin-left: 6px;
+    }
+
+    .forou-reply-message {
+        color: #334155; font-size: 14px; line-height: 1.65;
+    }
+
+    /* Estado vacío */
+    .forou-empty-replies {
+        text-align: center; padding: 32px 20px;
+        color: #94a3b8; font-size: 14px;
+    }
+
+    .forou-empty-icon {
+        font-size: 32px; margin-bottom: 10px;
+    }
+
+    /* Formulario de respuesta */
+    .forou-group { display: flex; flex-direction: column; margin-bottom: 18px; }
+    .forou-label { color: #2d3f60; font-weight: 700; margin-bottom: 8px; font-size: 14px; }
+
+    .forou-textarea-dark {
+        width: 100%; min-height: 120px; border-radius: 10px;
+        border: 1.5px solid #d0d9ee; background: #f7f9fd;
+        color: #1e2d4a; box-sizing: border-box;
+        font-size: 15px; font-family: inherit;
+        padding: 12px 14px; resize: vertical;
+    }
+    .forou-textarea-dark:focus {
+        outline: none; border-color: #1e4db7; background: #fff;
+        box-shadow: 0 0 0 3px rgba(30,77,183,0.1);
+    }
+
+    .forou-btn-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 4px; }
+
+    .forou-btn-submit {
+        display: inline-block;
+        background: linear-gradient(90deg, #1a3570 0%, #1e4db7 100%);
+        color: #fff; border: none; padding: 11px 22px;
+        border-radius: 10px; font-weight: 700; cursor: pointer;
+        font-size: 15px; font-family: inherit;
+        box-shadow: 0 4px 12px rgba(30,77,183,0.2);
+    }
+    .forou-btn-submit:hover { opacity: 0.9; }
+
+    .forou-btn-cancel {
+        display: inline-block; background: #f0f4fa;
+        color: #1e4db7; text-decoration: none;
+        padding: 11px 22px; border-radius: 10px;
+        font-weight: 700; border: 1px solid #d0d9ee; font-size: 15px;
+    }
+    .forou-btn-cancel:hover { background: #dbeafe; color: #1a3570; text-decoration: none; }
+
+    /* Hilo cerrado */
+    .forou-closed-banner {
+        display: flex; align-items: center; gap: 10px;
+        background: #fef2f2; border: 1px solid #fecaca;
+        border-radius: 12px; padding: 14px 20px;
+        color: #dc2626; font-size: 14px; font-weight: 600;
+    }
+
+    .forou-closed-badge {
+        display: inline-flex; align-items: center; gap: 5px;
+        background: #fef2f2; border: 1px solid #fecaca;
+        color: #dc2626; font-size: 11px; font-weight: 700;
+        padding: 2px 9px; border-radius: 999px;
+        text-transform: uppercase; letter-spacing: 0.04em;
+    }
+
+    .forou-btn-close {
+        display: inline-block; background: #fef2f2;
+        color: #dc2626; border: 1.5px solid #fecaca;
+        padding: 9px 18px; border-radius: 10px;
+        font-weight: 700; font-size: 14px; cursor: pointer;
+        font-family: inherit; transition: all 0.15s;
+    }
+    .forou-btn-close:hover { background: #fee2e2; }
+
+    .forou-btn-reopen {
+        display: inline-block; background: #f0fdf4;
+        color: #16a34a; border: 1.5px solid #bbf7d0;
+        padding: 9px 18px; border-radius: 10px;
+        font-weight: 700; font-size: 14px; cursor: pointer;
+        font-family: inherit; transition: all 0.15s;
+    }
+    .forou-btn-reopen:hover { background: #dcfce7; }
 </style>
 
 <div class="forou-breadcrumb">
@@ -36,25 +178,80 @@
 
 <div class="forou-detail-wrap">
 
-    <div class="forou-detail-card">
-        <div class="forou-thread-title">@Model.Thread.Title</div>
+    @* Hilo principal *@
+    <div class="forou-thread-card">
+        <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:10px;">
+            <h1 class="forou-thread-title" style="margin:0;">
+                @if (isClosed)
+                {
+                    <span style="margin-right:8px;">&#x1F512;</span>
+                }
+                @Model.Thread.Title
+            </h1>
+            @if (isClosed)
+            {
+                <span class="forou-closed-badge">&#x1F512; Cerrado</span>
+            }
+        </div>
         <div class="forou-thread-message">@Model.Thread.Message</div>
-        <div class="forou-thread-meta">@Model.Thread.CreatedAt.ToString("dd/MM/yyyy HH:mm")</div>
+        <div class="forou-thread-meta" style="justify-content:space-between; flex-wrap:wrap;">
+            <span style="display:flex;align-items:center;gap:8px;">
+                <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                </svg>
+                @Model.Thread.CreatedAt.ToString("dd/MM/yyyy HH:mm")
+            </span>
+            @if (isAdmin)
+            {
+                if (isClosed)
+                {
+                    using (Html.BeginForm("Reopen", "Thread", new { id = Model.Thread.ThreadId }, FormMethod.Post, null))
+                    {
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="forou-btn-reopen">&#x1F513; Reabrir hilo</button>
+                    }
+                }
+                else
+                {
+                    using (Html.BeginForm("Close", "Thread", new { id = Model.Thread.ThreadId }, FormMethod.Post, null))
+                    {
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="forou-btn-close">&#x1F512; Cerrar hilo</button>
+                    }
+                }
+            }
+        </div>
     </div>
 
-    <div class="forou-detail-card">
-        <h2 class="forou-section-title">Respuestas</h2>
+    @if (isClosed)
+    {
+        <div class="forou-closed-banner">
+            &#x1F512;&nbsp; Este hilo est&aacute; cerrado. No se pueden agregar nuevas respuestas.
+        </div>
+    }
+
+    @* Respuestas *@
+    <div class="forou-section-card">
+        <div class="forou-section-header">
+            <h2 class="forou-section-title">Respuestas</h2>
+            <span class="forou-reply-count">@replyCount</span>
+        </div>
 
         @if (Model.Replies != null && Model.Replies.Count > 0)
         {
             <div class="forou-replies-list">
                 @foreach (var r in Model.Replies)
                 {
+                    var initial = !string.IsNullOrEmpty(r.AuthorName) ? r.AuthorName[0].ToString().ToUpper() : "?";
                     <div class="forou-reply-card">
-                        <div class="forou-reply-message">@r.Message</div>
-                        <div class="forou-reply-meta">
-                            <strong style="color:#475569;">@r.AuthorName</strong>
-                            &middot; @r.CreatedAt.ToString("dd/MM/yyyy HH:mm")
+                        <div class="forou-reply-avatar">@initial</div>
+                        <div class="forou-reply-body">
+                            <div class="forou-reply-author">
+                                @r.AuthorName
+                                <span>@r.CreatedAt.ToString("dd/MM/yyyy HH:mm")</span>
+                            </div>
+                            <div class="forou-reply-message">@r.Message</div>
                         </div>
                     </div>
                 }
@@ -62,26 +259,41 @@
         }
         else
         {
-            <div class="forou-empty">S&eacute; el primero en responder esta consulta.</div>
+            <div class="forou-empty-replies">
+                <div class="forou-empty-icon">&#x1F4AC;</div>
+                <div>S&eacute; el primero en responder esta consulta.</div>
+            </div>
         }
     </div>
 
-    <div class="forou-detail-card">
-        <h2 class="forou-section-title">Responder</h2>
+    @* Formulario responder *@
+    @if (!isClosed)
+    {
+    <div class="forou-section-card">
+        <div class="forou-section-header">
+            <h2 class="forou-section-title">Responder</h2>
+        </div>
 
         @using (Html.BeginForm("Create", "Reply", FormMethod.Post))
         {
             @Html.AntiForgeryToken()
             <input type="hidden" name="ThreadId" value="@Model.Thread.ThreadId" />
 
-            <label class="forou-form-label">Escrib&iacute; tu respuesta</label>
-            <textarea name="Message" class="forou-textarea" style="width:100%; min-height:120px; margin-bottom:14px;" required></textarea>
+            <div class="forou-group">
+                <label class="forou-label">Escrib&iacute; tu respuesta</label>
+                <textarea name="Message" class="forou-textarea-dark"
+                          placeholder="Aport&aacute; tu respuesta o comentario..." required></textarea>
+            </div>
 
             <div class="forou-btn-row">
-                <button type="submit" class="forou-btn-primary">Publicar respuesta</button>
-                <a class="forou-btn-secondary" href="@Url.Action("Index", "Thread", new { categoryId = Model.Thread.CategoryId })">Volver a consultas</a>
+                <button type="submit" class="forou-btn-submit">Publicar respuesta</button>
+                <a class="forou-btn-cancel"
+                   href="@Url.Action("Index", "Thread", new { categoryId = Model.Thread.CategoryId })">
+                    Volver a consultas
+                </a>
             </div>
         }
     </div>
+    }
 
 </div>

@@ -74,13 +74,13 @@
 
             <div class="forou-group">
                 <label class="forou-label">T&iacute;tulo</label>
-                @Html.TextBoxFor(m => m.Title, new { @class = "forou-input-dark", placeholder = "Escrib\u00ed un t\u00edtulo claro y descriptivo", required = "required" })
+                @Html.TextBoxFor(m => m.Title, new { @class = "forou-input-dark", placeholder = "Escribi un titulo claro y descriptivo", required = "required" })
                 @Html.ValidationMessageFor(m => m.Title)
             </div>
 
             <div class="forou-group">
                 <label class="forou-label">Mensaje</label>
-                @Html.TextAreaFor(m => m.Message, new { @class = "forou-textarea-dark", rows = 7, placeholder = "Describ\u00ed tu consulta con el mayor detalle posible..." })
+                @Html.TextAreaFor(m => m.Message, new { @class = "forou-textarea-dark", rows = 7, placeholder = "Describi tu consulta con el mayor detalle posible..." })
                 @Html.ValidationMessageFor(m => m.Message)
             </div>
 
