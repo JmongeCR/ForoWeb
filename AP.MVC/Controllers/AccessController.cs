@@ -24,7 +24,7 @@ namespace AP.MVC.Controllers
 
             if (user == null)
             {
-                ViewBag.Error = "Correo o contraseña incorrectos.";
+                ViewBag.Error = "Correo o contrasena incorrectos.";
                 return View();
             }
 

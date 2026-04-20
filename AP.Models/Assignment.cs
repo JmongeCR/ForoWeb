@@ -11,11 +11,11 @@ namespace AP.Models
         [Required(ErrorMessage = "La clase es obligatoria.")]
         public int ClassId { get; set; }
 
-        [Required(ErrorMessage = "El título es obligatorio.")]
-        [StringLength(150, ErrorMessage = "El título no puede superar los 150 caracteres.")]
+        [Required(ErrorMessage = "El titulo es obligatorio.")]
+        [StringLength(150, ErrorMessage = "El titulo no puede superar los 150 caracteres.")]
         public string Title { get; set; }
 
-        [Required(ErrorMessage = "La descripción es obligatoria.")]
+        [Required(ErrorMessage = "La descripcion es obligatoria.")]
         public string Description { get; set; }
 
         [Required(ErrorMessage = "La fecha de entrega es obligatoria.")]

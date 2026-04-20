@@ -7,13 +7,13 @@ namespace AP.MVC.Models
 {
     public class CreateAssignmentVM
     {
-        [Required(ErrorMessage = "El título es obligatorio")]
+        [Required(ErrorMessage = "El titulo es obligatorio")]
         public string Title { get; set; }
 
-        [Required(ErrorMessage = "La descripción es obligatoria")]
+        [Required(ErrorMessage = "La descripcion es obligatoria")]
         public string Description { get; set; }
 
-        [Required(ErrorMessage = "La fecha límite es obligatoria")]
+        [Required(ErrorMessage = "La fecha limite es obligatoria")]
         public DateTime DueDate { get; set; }
 
         public int ClaseId { get; set; }

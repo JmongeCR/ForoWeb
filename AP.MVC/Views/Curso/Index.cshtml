@@ -236,7 +236,7 @@
                         <td style="color:#1e293b; font-weight:700;">@rowNum</td>
                         @{ rowNum++; }
                         <td style="color:#1e293b; font-weight:700;">@c.Name</td>
-                        <td class="forou-desc-cell">@(c.Description ?? "—")</td>
+                        <td class="forou-desc-cell">@(c.Description ?? "&mdash;")</td>
                         <td>
                             <a class="forou-action-link" href="@Url.Action("Edit", "Curso", new { id = c.CourseId })">Editar</a>
                         </td>

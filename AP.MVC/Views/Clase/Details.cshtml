@@ -1,7 +1,7 @@
 @model AP.MVC.Models.ClaseDetailsVM
 
 @{
-    ViewBag.Title = Model.Clase.Name + " – Estudiantes";
+    ViewBag.Title = Model.Clase.Name + " &ndash; Estudiantes";
 }
 
 <style>
@@ -175,7 +175,7 @@
 
 <div class="forou-breadcrumb">
     <a href="@Url.Action("Index", "Clase")">Clases</a>
-    <span class="forou-breadcrumb-sep">›</span>
+    <span class="forou-breadcrumb-sep">&rsaquo;</span>
     <span class="forou-breadcrumb-current">@Model.Clase.Name</span>
 </div>
 

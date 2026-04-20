@@ -11,7 +11,7 @@ namespace AP.Models
         public string FullName { get; set; }
 
         [Required(ErrorMessage = "El correo es obligatorio.")]
-        [EmailAddress(ErrorMessage = "Ingresá un correo válido.")]
+        [EmailAddress(ErrorMessage = "Ingresa un correo valido.")]
         [StringLength(100)]
         public string Email { get; set; }
 

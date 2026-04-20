@@ -16,7 +16,7 @@ namespace AP.MVC.Controllers
         {
             new SelectListItem { Value = "Todos",       Text = "Todos los campos" },
             new SelectListItem { Value = "Nombre",      Text = "Nombre" },
-            new SelectListItem { Value = "Descripcion", Text = "Descripción" }
+            new SelectListItem { Value = "Descripcion", Text = "Descripcion" }
         };
 
         public ActionResult Index()
